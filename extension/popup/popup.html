@@ -1,0 +1,1039 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>musing</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: light-dark(#fff, #202124);
+      color: light-dark(#202124, #e8eaed);
+      width: 350px;
+      padding: 0;
+      color-scheme: light dark;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 1rem;
+      border-bottom: 1px solid light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1));
+    }
+
+    .header img {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+    }
+
+    .header-title {
+      font-size: 1.125rem;
+      font-weight: 600;
+      flex: 1;
+    }
+
+    .header-links {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .header-link {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      color: light-dark(#5f6368, #9aa0a6);
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .header-link:hover {
+      background: light-dark(rgba(0, 0, 0, 0.05), rgba(255, 255, 255, 0.1));
+      color: light-dark(#202124, #e8eaed);
+    }
+
+    .header-link svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .header-tabs {
+      display: flex;
+      gap: 0.25rem;
+    }
+
+    .tab-btn {
+      background: none;
+      border: none;
+      padding: 0.375rem 0.625rem;
+      font-size: 0.75rem;
+      cursor: pointer;
+      color: light-dark(#606060, #a0a0a0);
+      border-radius: 4px;
+      transition: all 0.2s;
+    }
+
+    .tab-btn:hover {
+      background: light-dark(rgba(0, 0, 0, 0.05), rgba(255, 255, 255, 0.1));
+    }
+
+    .tab-btn.active {
+      background: light-dark(rgba(0, 0, 0, 0.08), rgba(255, 255, 255, 0.15));
+      color: light-dark(#202124, #e8eaed);
+      font-weight: 500;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .section {
+      padding: 0.875rem 1rem;
+      border-bottom: 1px solid light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1));
+    }
+
+    .section:last-child {
+      border-bottom: none;
+    }
+
+    .section-title {
+      font-size: 0.7rem;
+      color: light-dark(#808080, #707070);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.625rem;
+    }
+
+    .setting-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.375rem 0;
+    }
+
+    .setting-label {
+      font-size: 0.8125rem;
+    }
+
+    .setting-sublabel {
+      color: light-dark(#808080, #707070);
+      font-size: 0.7rem;
+      margin-top: 0.125rem;
+    }
+
+    select {
+      background: light-dark(rgba(0, 0, 0, 0.05), rgba(255, 255, 255, 0.1));
+      border: 1px solid light-dark(rgba(0, 0, 0, 0.15), rgba(255, 255, 255, 0.2));
+      border-radius: 6px;
+      padding: 0.375rem 0.625rem;
+      color: inherit;
+      font-size: 0.8125rem;
+      cursor: pointer;
+      min-width: 120px;
+    }
+
+    select:focus {
+      outline: none;
+      border-color: #4a9eff;
+    }
+
+    /* Toggle switch */
+    .toggle {
+      position: relative;
+      width: 40px;
+      height: 22px;
+    }
+
+    .toggle input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .toggle-slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: light-dark(rgba(0, 0, 0, 0.2), rgba(255, 255, 255, 0.2));
+      border-radius: 22px;
+      transition: 0.2s;
+    }
+
+    .toggle-slider::before {
+      position: absolute;
+      content: "";
+      height: 16px;
+      width: 16px;
+      left: 3px;
+      bottom: 3px;
+      background: light-dark(#fff, #e8e8e8);
+      border-radius: 50%;
+      transition: 0.2s;
+    }
+
+    .toggle input:checked + .toggle-slider {
+      background: #4a9eff;
+    }
+
+    .toggle input:checked + .toggle-slider::before {
+      transform: translateX(18px);
+    }
+
+    /* Sync row */
+    .sync-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .sync-info {
+      font-size: 0.8125rem;
+    }
+
+    .sync-time {
+      color: light-dark(#606060, #a0a0a0);
+      font-size: 0.75rem;
+    }
+
+    .btn {
+      background: #4a9eff;
+      border: none;
+      border-radius: 6px;
+      padding: 0.375rem 0.75rem;
+      color: #fff;
+      font-size: 0.8125rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn:hover {
+      background: #3a8eef;
+    }
+
+    .btn:disabled {
+      background: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.2));
+      cursor: not-allowed;
+    }
+
+    .btn-secondary {
+      background: light-dark(rgba(0, 0, 0, 0.08), rgba(255, 255, 255, 0.15));
+      color: light-dark(#202124, #e8eaed);
+    }
+
+    .btn-secondary:hover {
+      background: light-dark(rgba(0, 0, 0, 0.12), rgba(255, 255, 255, 0.2));
+    }
+
+    .status {
+      padding: 0.5rem 1rem;
+      font-size: 0.75rem;
+      text-align: center;
+      background: rgba(74, 222, 128, 0.15);
+      color: #4ade80;
+      display: none;
+    }
+
+    .status.show {
+      display: block;
+    }
+
+    .status.error {
+      background: rgba(239, 68, 68, 0.15);
+      color: #ef4444;
+    }
+
+    .status.success {
+      background: rgba(74, 222, 128, 0.15);
+      color: #4ade80;
+    }
+
+    /* Privacy section */
+    .privacy-section {
+      padding: 0.75rem 1rem;
+    }
+
+    .privacy-notice {
+      font-size: 0.7rem;
+      color: light-dark(#808080, #909090);
+      line-height: 1.5;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .privacy-icon {
+      flex-shrink: 0;
+      margin-top: 0.1rem;
+      opacity: 0.7;
+    }
+
+    .privacy-notice a {
+      color: #4a9eff;
+      text-decoration: none;
+      margin-left: auto;
+    }
+
+    .privacy-notice a:hover {
+      text-decoration: underline;
+    }
+
+    .built-in {
+      font-size: 0.65rem;
+      color: light-dark(#a0a0a0, #606060);
+      text-align: center;
+      margin-top: 0.5rem;
+    }
+
+    /* Modal styles */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 2147483647; /* Max z-index to stay above Chrome UI */
+    }
+
+    .modal.show {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-content {
+      background: light-dark(#fff, #2d2d30);
+      border-radius: 8px;
+      width: 320px;
+      max-height: 400px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1));
+    }
+
+    .modal-header h3 {
+      font-size: 0.875rem;
+      font-weight: 600;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 1.25rem;
+      cursor: pointer;
+      color: inherit;
+      opacity: 0.7;
+      padding: 0;
+      line-height: 1;
+    }
+
+    .modal-close:hover {
+      opacity: 1;
+    }
+
+    .modal-body {
+      padding: 1rem;
+      overflow-y: auto;
+      font-size: 0.75rem;
+      line-height: 1.5;
+    }
+
+    .modal-body h4 {
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin: 0.75rem 0 0.25rem;
+    }
+
+    .modal-body h4:first-child {
+      margin-top: 0;
+    }
+
+    .modal-body p {
+      color: light-dark(#606060, #a0a0a0);
+      margin: 0;
+    }
+
+    /* Logs tab styles */
+    .logs-empty {
+      font-size: 0.75rem;
+      color: light-dark(#808080, #707070);
+      text-align: center;
+      padding: 1rem 0;
+    }
+
+    .logs-list {
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    .log-item {
+      padding: 0.5rem;
+      border-radius: 4px;
+      background: light-dark(rgba(0, 0, 0, 0.03), rgba(255, 255, 255, 0.05));
+      margin-bottom: 0.5rem;
+      font-size: 0.7rem;
+    }
+
+    .log-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .log-source {
+      font-weight: 600;
+      color: #4a9eff;
+      margin-bottom: 0.25rem;
+    }
+
+    .log-time {
+      color: light-dark(#808080, #707070);
+      font-size: 0.65rem;
+    }
+
+    .log-preview {
+      color: light-dark(#606060, #a0a0a0);
+      margin-top: 0.25rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .favorites-list {
+      max-height: 260px;
+      overflow-y: auto;
+      margin-top: 0.75rem;
+    }
+
+    .favorite-item {
+      padding: 0.75rem;
+      border-radius: 8px;
+      background: light-dark(rgba(0, 0, 0, 0.03), rgba(255, 255, 255, 0.05));
+      border: 1px solid light-dark(rgba(0, 0, 0, 0.06), rgba(255, 255, 255, 0.08));
+      margin-bottom: 0.5rem;
+    }
+
+    .favorite-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .favorite-text {
+      font-size: 0.75rem;
+      color: light-dark(#202124, #e8eaed);
+      line-height: 1.4;
+      margin-bottom: 0.5rem;
+    }
+
+    .favorite-meta {
+      display: flex;
+      justify-content: space-between;
+      gap: 0.75rem;
+      color: light-dark(#606060, #a0a0a0);
+      font-size: 0.7rem;
+      align-items: center;
+    }
+
+    .favorite-remove {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: inherit;
+      opacity: 0.7;
+      padding: 0.25rem 0.5rem;
+      border-radius: 6px;
+    }
+
+    .favorite-remove:hover {
+      opacity: 1;
+      background: light-dark(rgba(0, 0, 0, 0.05), rgba(255, 255, 255, 0.1));
+    }
+
+    .quotes-count {
+      font-size: 0.8125rem;
+      color: light-dark(#606060, #a0a0a0);
+    }
+
+    /* AI Settings Panel */
+    .ai-settings-panel {
+      display: none;
+      margin-top: 0.5rem;
+      padding-top: 0.5rem;
+      border-top: 1px solid light-dark(rgba(0, 0, 0, 0.05), rgba(255, 255, 255, 0.05));
+    }
+
+    .ai-settings-panel.show {
+      display: block;
+    }
+
+    .api-key-input {
+      background: light-dark(rgba(0, 0, 0, 0.05), rgba(255, 255, 255, 0.1));
+      border: 1px solid light-dark(rgba(0, 0, 0, 0.15), rgba(255, 255, 255, 0.2));
+      border-radius: 6px;
+      padding: 0.375rem 0.625rem;
+      color: inherit;
+      font-size: 0.75rem;
+      width: 140px;
+      font-family: monospace;
+    }
+
+    .api-key-input:focus {
+      outline: none;
+      border-color: #4a9eff;
+    }
+
+    .api-key-input::placeholder {
+      color: light-dark(#a0a0a0, #606060);
+    }
+
+    .api-key-row {
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .api-key-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .api-key-toggle {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: light-dark(#606060, #a0a0a0);
+      padding: 0.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+      transition: color 0.15s, background 0.15s;
+    }
+
+    .api-key-toggle:hover {
+      color: light-dark(#202124, #e8eaed);
+      background: light-dark(rgba(0, 0, 0, 0.05), rgba(255, 255, 255, 0.1));
+    }
+
+    .api-key-toggle svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .api-key-help {
+      width: 100%;
+      margin-top: 0.25rem;
+    }
+
+    .api-key-link {
+      font-size: 0.7rem;
+      color: #4a9eff;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .api-key-link:hover {
+      text-decoration: underline;
+    }
+
+    .advanced-toggle {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: light-dark(#606060, #a0a0a0);
+      font-size: 0.75rem;
+      padding: 0.375rem 0;
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      transition: color 0.15s;
+    }
+
+    .advanced-toggle:hover {
+      color: light-dark(#202124, #e8eaed);
+    }
+
+    .advanced-toggle svg {
+      width: 12px;
+      height: 12px;
+      transition: transform 0.2s;
+    }
+
+    .advanced-toggle.expanded svg {
+      transform: rotate(180deg);
+    }
+
+    .advanced-panel {
+      display: none;
+      padding-top: 0.25rem;
+    }
+
+    .advanced-panel.show {
+      display: block;
+    }
+
+    .debug-row {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    /* Raw data modal */
+    .raw-data-pre {
+      font-family: 'Monaco', 'Consolas', monospace;
+      font-size: 0.65rem;
+      background: light-dark(#f5f5f5, #1a1a1a);
+      padding: 0.75rem;
+      border-radius: 4px;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      word-break: break-all;
+      max-height: 300px;
+    }
+
+    /* Pagination */
+    .pagination {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      margin-top: 0.75rem;
+      padding-top: 0.5rem;
+      border-top: 1px solid light-dark(rgba(0, 0, 0, 0.05), rgba(255, 255, 255, 0.05));
+    }
+
+    .pagination.hidden {
+      display: none;
+    }
+
+    .pagination-btn {
+      background: light-dark(rgba(0, 0, 0, 0.05), rgba(255, 255, 255, 0.1));
+      border: none;
+      border-radius: 4px;
+      padding: 0.25rem 0.5rem;
+      font-size: 0.75rem;
+      cursor: pointer;
+      color: light-dark(#5f6368, #9aa0a6);
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .pagination-btn:hover:not(:disabled) {
+      background: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.15));
+      color: light-dark(#202124, #e8eaed);
+    }
+
+    .pagination-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .pagination-info {
+      font-size: 0.7rem;
+      color: light-dark(#808080, #707070);
+      min-width: 3rem;
+      text-align: center;
+    }
+
+    .pill-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.75rem;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.35rem 0.5rem;
+      border-radius: 999px;
+      background: light-dark(rgba(0, 0, 0, 0.05), rgba(255, 255, 255, 0.08));
+      border: 1px solid light-dark(rgba(0, 0, 0, 0.12), rgba(255, 255, 255, 0.15));
+      font-size: 0.75rem;
+      color: inherit;
+    }
+
+    .pill-remove {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0.1rem 0.25rem;
+      border-radius: 6px;
+      color: inherit;
+      opacity: 0.65;
+    }
+
+    .pill-remove:hover {
+      opacity: 1;
+      background: light-dark(rgba(0, 0, 0, 0.06), rgba(255, 255, 255, 0.1));
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <img src="../icons/icon48.png" alt="musing">
+    <span class="header-title">musing</span>
+    <div class="header-tabs">
+      <button class="tab-btn active" data-tab="settings">Settings</button>
+      <button class="tab-btn" data-tab="logs">Logs</button>
+    </div>
+    <div class="header-links">
+      <a href="https://musing.wiki" target="_blank" class="header-link" title="Website">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="2" y1="12" x2="22" y2="12"></line>
+          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+        </svg>
+      </a>
+      <a href="https://x.com/pghqdev" target="_blank" class="header-link" title="X (Twitter)">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+        </svg>
+      </a>
+    </div>
+  </div>
+
+  <!-- Settings Tab -->
+  <div class="tab-content active" id="tab-settings">
+    <div class="section">
+      <div class="section-title">Sync</div>
+      <div class="sync-row">
+        <div>
+          <div class="sync-info">Last synced</div>
+          <div class="sync-time" id="last-sync">Never</div>
+        </div>
+        <button class="btn" id="sync-btn">Sync Now</button>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Data Sources</div>
+      <div class="setting-row">
+        <div>
+          <div class="setting-label">Claude.ai</div>
+          <div class="setting-sublabel">Extract themes from conversations</div>
+        </div>
+        <label class="toggle">
+          <input type="checkbox" id="enable-claude" checked disabled>
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+      <div class="setting-row">
+        <div>
+          <div class="setting-label">ChatGPT</div>
+          <div class="setting-sublabel">Extract themes from conversations</div>
+        </div>
+        <label class="toggle">
+          <input type="checkbox" id="enable-chatgpt" checked disabled>
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+      <div class="setting-row">
+        <div>
+          <div class="setting-label">Gemini</div>
+          <div class="setting-sublabel">Extract themes from conversations</div>
+        </div>
+        <label class="toggle">
+          <input type="checkbox" id="enable-gemini" checked disabled>
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Additional Data Sources</div>
+      <div class="setting-row">
+        <div>
+          <div class="setting-label">Browser History</div>
+          <div class="setting-sublabel">Extract themes from visited pages</div>
+        </div>
+        <label class="toggle">
+          <input type="checkbox" id="enable-browser-history" disabled>
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+      <div class="setting-row" id="history-days-row" style="display: none;">
+        <div class="setting-label">History Period</div>
+        <select id="history-days" disabled>
+          <option value="1">Last 24 hours</option>
+          <option value="3">Last 3 days</option>
+          <option value="7" selected>Last 7 days</option>
+          <option value="14">Last 14 days</option>
+          <option value="30">Last 30 days</option>
+        </select>
+      </div>
+      <div class="setting-sublabel" id="history-privacy-note" style="display: none; margin-top: 0.5rem; padding: 0.5rem; background: light-dark(rgba(74, 158, 255, 0.1), rgba(138, 180, 248, 0.1)); border-radius: 4px;">
+        Sensitive sites (banking, email, health) are automatically excluded. Processing happens locally.
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Personalization</div>
+      <div class="setting-row">
+        <div>
+          <div class="setting-label">Daily Quote</div>
+          <div class="setting-sublabel">Show one quote per day unless refreshed</div>
+        </div>
+        <label class="toggle">
+          <input type="checkbox" id="daily-quote" disabled>
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+      <div class="setting-row">
+        <div>
+          <div class="setting-label">Theme Chips</div>
+          <div class="setting-sublabel">Show why a quote was chosen</div>
+        </div>
+        <label class="toggle">
+          <input type="checkbox" id="show-theme-chips" checked disabled>
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+      <div class="setting-row">
+        <div>
+          <div class="setting-label">Proactive Refresh</div>
+          <div class="setting-sublabel">May open background tabs to refresh themes</div>
+        </div>
+        <label class="toggle">
+          <input type="checkbox" id="proactive-scrape" disabled>
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+      <div class="setting-row">
+        <div>
+          <div class="setting-label">Blocked Themes</div>
+          <div class="setting-sublabel">Manage “less like this” themes</div>
+        </div>
+        <button class="btn btn-secondary" id="manage-blocked-themes">Manage</button>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Smart Reasons</div>
+      <div class="setting-row">
+        <div>
+          <div class="setting-label">Smart Reasons</div>
+          <div class="setting-sublabel">Understand why quotes are relevant to you</div>
+        </div>
+        <label class="toggle">
+          <input type="checkbox" id="enable-ai" disabled>
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+      <div id="ai-settings-panel" class="ai-settings-panel">
+        <div class="setting-row api-key-row">
+          <div class="setting-label" id="api-key-label">Groq API Key</div>
+          <div class="api-key-wrapper">
+            <input type="password" id="ai-api-key" class="api-key-input" placeholder="Enter API key" disabled>
+            <button type="button" class="api-key-toggle" id="api-key-toggle" title="Show/hide API key">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="eye-icon">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+            </button>
+          </div>
+          <div class="api-key-help">
+            <a href="https://console.groq.com/keys" target="_blank" class="api-key-link" id="get-key-link">
+              Get free key
+              <svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                <polyline points="15 3 21 3 21 9"></polyline>
+                <line x1="10" y1="14" x2="21" y2="3"></line>
+              </svg>
+            </a>
+          </div>
+        </div>
+        <button type="button" class="advanced-toggle" id="advanced-toggle">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+          Advanced
+        </button>
+        <div class="advanced-panel" id="advanced-panel">
+          <div class="setting-row">
+            <div class="setting-label">Provider</div>
+            <select id="ai-provider" disabled>
+              <option value="groq">Groq (Free)</option>
+              <option value="claude">Claude</option>
+              <option value="openai">OpenAI</option>
+            </select>
+          </div>
+          <div class="setting-row">
+            <div class="setting-label">Model</div>
+            <select id="ai-model" disabled>
+              <option value="llama-3.3-70b-versatile">Llama 3.3 70B</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Notifications</div>
+      <div class="setting-row">
+        <div>
+          <div class="setting-label">Update Notifications</div>
+          <div class="setting-sublabel">Show what's new after updates</div>
+        </div>
+        <label class="toggle">
+          <input type="checkbox" id="enable-update-notifications" checked disabled>
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+      <div class="setting-row">
+        <div>
+          <div class="setting-label">Tips & Promotions</div>
+          <div class="setting-sublabel">Occasional feature highlights</div>
+        </div>
+        <label class="toggle">
+          <input type="checkbox" id="enable-promotions" checked disabled>
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+    </div>
+
+    <div class="section privacy-section">
+      <div class="privacy-notice">
+        <svg class="privacy-icon" viewBox="0 0 24 24" width="12" height="12" fill="currentColor">
+          <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/>
+        </svg>
+        private by default. <br><strong>optional AI features use your own API keys.</strong>
+        <a href="#" id="privacy-link">learn more</a>
+      </div>
+      <div class="built-in">🇯🇵 Built in Japan</div>
+    </div>
+  </div>
+
+  <!-- Logs Tab -->
+  <div class="tab-content" id="tab-logs">
+    <div class="section">
+      <div class="section-title">Scrape History</div>
+      <div class="logs-empty" id="logs-empty">No scrapes yet. Visit claude.ai or chatgpt.com to collect conversation data.</div>
+      <div class="logs-list" id="logs-list"></div>
+      <div class="pagination hidden" id="logs-pagination">
+        <button class="pagination-btn" id="logs-prev">&larr;</button>
+        <span class="pagination-info" id="logs-page-info">1 / 1</span>
+        <button class="pagination-btn" id="logs-next">&rarr;</button>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Cached Quotes</div>
+      <div class="quotes-count" id="quotes-count">0 quotes cached</div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Favorites</div>
+      <div class="sync-row">
+        <div class="quotes-count" id="favorites-count">0 saved</div>
+        <button class="btn btn-secondary" id="view-favorites-btn">View</button>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Debug</div>
+      <div class="debug-row">
+        <button class="btn btn-secondary" id="clear-logs-btn">Clear Data</button>
+        <button class="btn btn-secondary" id="view-raw-btn">View Raw</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="status" id="status">Saved</div>
+
+  <!-- Privacy Modal -->
+  <div class="modal" id="privacy-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>learn more</h3>
+        <button class="modal-close" id="privacy-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <h4>private by default</h4>
+        <p>theme extraction and quote matching run entirely on your device. your conversations never leave your browser.</p>
+
+        <h4>smart reasons (optional)</h4>
+        <p>when enabled, conversation snippets are sent to your chosen AI provider (Groq, Claude, or OpenAI) using your own API key. this is the only feature that contacts external servers.</p>
+
+        <h4>how it works</h4>
+        <p>musing extracts themes from your AI conversations to find relevant historical quotes. all core processing happens locally in your browser.</p>
+
+        <h4>have feedback?</h4>
+        <p>would love to hear from you. ping me at <a href="https://x.com/pghqdev">@pghqdev</a></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="blocked-themes-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Blocked Themes</h3>
+        <button class="modal-close" id="blocked-themes-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p>These themes will be avoided when selecting quotes.</p>
+        <div class="pill-list" id="blocked-themes-list"></div>
+        <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+          <button class="btn btn-secondary" id="blocked-themes-clear">Clear all</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="favorites-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Favorites</h3>
+        <button class="modal-close" id="favorites-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div id="favorites-empty" style="opacity: 0.7;">No favorites yet</div>
+        <div class="favorites-list" id="favorites-list"></div>
+        <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+          <button class="btn btn-secondary" id="favorites-export">Copy JSON</button>
+          <button class="btn btn-secondary" id="favorites-clear">Clear all</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Raw Data Modal -->
+  <div class="modal" id="raw-data-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Raw Storage Data</h3>
+        <button class="modal-close" id="raw-data-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <pre class="raw-data-pre" id="raw-data-pre"></pre>
+      </div>
+    </div>
+  </div>
+
+  <script src="../lib/storage.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

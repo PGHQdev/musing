@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security vulnerability
+    url: https://github.com/PGHQdev/musing/security/advisories/new
+    about: Report security issues privately, not as a public issue.
+  - name: Chrome Web Store listing
+    url: https://chromewebstore.google.com/detail/hkfpdamehcnbhfeilamlbeabgdlgnjfk
+    about: Install Musing or leave a review.

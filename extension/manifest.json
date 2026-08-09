@@ -1,0 +1,98 @@
+{
+  "manifest_version": 3,
+  "name": "musing — personalized new tab quotes",
+  "short_name": "musing",
+  "version": "1.2.2",
+  "description": "Personalized quotes on every new tab, matched to your AI conversations. 100% private — everything runs locally in your browser.",
+  "homepage_url": "https://musing.wiki",
+  "minimum_chrome_version": "110",
+  "permissions": [
+    "storage",
+    "alarms"
+  ],
+  "optional_permissions": [
+    "history"
+  ],
+  "host_permissions": [
+    "https://claude.ai/*",
+    "https://chatgpt.com/*",
+    "https://gemini.google.com/app/*",
+    "https://api.groq.com/*",
+    "https://api.anthropic.com/*",
+    "https://api.openai.com/*"
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  },
+  "chrome_url_overrides": {
+    "newtab": "newtab/newtab.html"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "inject/api-interceptor.js"
+      ],
+      "matches": [
+        "https://claude.ai/*",
+        "https://chatgpt.com/*",
+        "https://gemini.google.com/*"
+      ]
+    }
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://claude.ai/*"
+      ],
+      "js": [
+        "lib/storage.js",
+        "content-scripts/capture-core.js",
+        "content-scripts/injector.js",
+        "content-scripts/claude.js"
+      ],
+      "run_at": "document_start"
+    },
+    {
+      "matches": [
+        "https://chatgpt.com/*"
+      ],
+      "js": [
+        "lib/storage.js",
+        "content-scripts/capture-core.js",
+        "content-scripts/injector.js",
+        "content-scripts/chatgpt.js"
+      ],
+      "run_at": "document_start"
+    },
+    {
+      "matches": [
+        "https://gemini.google.com/app/*"
+      ],
+      "js": [
+        "lib/storage.js",
+        "content-scripts/capture-core.js",
+        "content-scripts/injector.js",
+        "content-scripts/gemini.js"
+      ],
+      "run_at": "document_start"
+    }
+  ],
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "action": {
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png"
+    },
+    "default_title": "musing",
+    "default_popup": "popup/popup.html"
+  }
+}

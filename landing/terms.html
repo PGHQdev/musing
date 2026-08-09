@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Terms of Service for Musing - Personalized quotes on every new tab.">
+  <title>Terms of Service - Musing</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/icon32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="icons/icon16.png">
+  <link rel="apple-touch-icon" href="icons/icon128.png">
+  <style>
+    :root {
+      --accent: #4a9eff;
+      --accent-hover: #6bb0ff;
+      --bg-primary: #202124;
+      --bg-secondary: #292a2d;
+      --bg-tertiary: #35363a;
+      --text-primary: #e8eaed;
+      --text-secondary: #9aa0a6;
+      --radius: 24px;
+      --radius-sm: 12px;
+      --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg-primary: #ffffff;
+        --bg-secondary: #f8f9fa;
+        --bg-tertiary: #e8eaed;
+        --text-primary: #202124;
+        --text-secondary: #5f6368;
+      }
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* Header */
+    header {
+      padding: 24px;
+      border-bottom: 1px solid var(--bg-tertiary);
+    }
+
+    .header-content {
+      max-width: 800px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      text-decoration: none;
+      letter-spacing: 0.05em;
+      text-transform: lowercase;
+    }
+
+    .logo img {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+    }
+
+    .back-link {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: color var(--transition);
+    }
+
+    .back-link:hover {
+      color: var(--accent);
+    }
+
+    /* Main Content */
+    main {
+      padding: 64px 24px;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 16px;
+    }
+
+    .last-updated {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      margin-bottom: 48px;
+    }
+
+    .content-section {
+      margin-bottom: 40px;
+    }
+
+    h2 {
+      font-size: 1.35rem;
+      margin-bottom: 16px;
+      color: var(--text-primary);
+    }
+
+    p {
+      color: var(--text-secondary);
+      margin-bottom: 16px;
+    }
+
+    ul {
+      color: var(--text-secondary);
+      margin-left: 24px;
+      margin-bottom: 16px;
+    }
+
+    li {
+      margin-bottom: 8px;
+    }
+
+    .highlight-box {
+      background: var(--bg-secondary);
+      border-radius: var(--radius-sm);
+      padding: 24px;
+      margin: 24px 0;
+    }
+
+    .highlight-box p {
+      margin-bottom: 0;
+    }
+
+    .highlight-box strong {
+      color: var(--text-primary);
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    /* Footer */
+    footer {
+      padding: 48px 24px;
+      text-align: center;
+      border-top: 1px solid var(--bg-tertiary);
+    }
+
+    .footer-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .footer-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .footer-brand img {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+    }
+
+    .footer-brand span {
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .footer-links {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .footer-links a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: color var(--transition);
+      font-size: 0.9rem;
+    }
+
+    .footer-links a:hover {
+      color: var(--accent);
+    }
+
+    .copyright {
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      margin-top: 32px;
+    }
+
+    @media (max-width: 768px) {
+      main {
+        padding: 48px 20px;
+      }
+
+      h1 {
+        font-size: 2rem;
+      }
+
+      .footer-content {
+        flex-direction: column;
+        gap: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <a href="/" class="logo">
+        <img src="icons/icon48.png" alt="musing icon">
+        musing
+      </a>
+      <a href="/" class="back-link">&larr; Back to home</a>
+    </div>
+  </header>
+
+  <main>
+    <div class="container">
+      <h1>Terms of Service</h1>
+      <p class="last-updated">Last updated: August 9, 2026</p>
+
+      <div class="highlight-box">
+        <p><strong>The short version:</strong> Use Musing to enjoy personalized quotes. Don't misuse it. We provide it as-is and aren't liable for issues.</p>
+      </div>
+
+      <div class="content-section">
+        <h2>1. Acceptance of Terms</h2>
+        <p>By installing or using the Musing browser extension ("the Extension"), you agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use the Extension.</p>
+      </div>
+
+      <div class="content-section">
+        <h2>2. Description of Service</h2>
+        <p>Musing is a browser extension that:</p>
+        <ul>
+          <li>Replaces your new tab page with personalized historical quotes</li>
+          <li>Extracts themes from your AI conversations on supported platforms (Claude, ChatGPT, Google Gemini)</li>
+          <li>Matches quotes to your interests using local processing</li>
+          <li>Optionally explains quote choices (Smart Reasons) using an AI provider API key you supply</li>
+        </ul>
+        <p>By default, all processing occurs locally on your device. If you enable the optional Smart Reasons feature with your own API key, conversation-derived text is sent directly from your browser to the AI provider you chose (Groq, Anthropic, or OpenAI).</p>
+      </div>
+
+      <div class="content-section">
+        <h2>3. Privacy</h2>
+        <p>Your privacy is fundamental to Musing. Please review our <a href="/privacy">Privacy Policy</a> for detailed information about how your data is handled. In summary:</p>
+        <ul>
+          <li>Data processing happens locally on your device by default</li>
+          <li>The extension sends no data to servers we operate and contains no analytics; the extension stores no email and operates no waitlist</li>
+          <li>If you enable Smart Reasons with your own API key, data goes directly to your chosen AI provider under that provider's privacy policy</li>
+          <li>If you join the optional waitlist on this website, we store the email you submit, along with the request time and browser user-agent string, to notify you at launch</li>
+          <li>You have full control over your data through extension settings</li>
+        </ul>
+      </div>
+
+      <div class="content-section">
+        <h2>4. User Responsibilities</h2>
+        <p>When using Musing, you agree to:</p>
+        <ul>
+          <li>Use the Extension only for its intended purpose</li>
+          <li>Not attempt to reverse engineer, modify, or create derivative works of the Extension</li>
+          <li>Not use the Extension for any unlawful purpose</li>
+          <li>Not interfere with or disrupt the Extension's functionality</li>
+        </ul>
+      </div>
+
+      <div class="content-section">
+        <h2>5. Intellectual Property</h2>
+        <p>The Extension, including its code, design, and branding, is owned by Musing. The historical quotes displayed are in the public domain or used under fair use principles for educational purposes.</p>
+        <p>You may not:</p>
+        <ul>
+          <li>Copy, modify, or distribute the Extension's code without permission</li>
+          <li>Use Musing's branding or trademarks without authorization</li>
+          <li>Claim ownership of the Extension or its components</li>
+        </ul>
+      </div>
+
+      <div class="content-section">
+        <h2>6. Third-Party Platforms</h2>
+        <p>Musing interacts with third-party platforms (Claude, ChatGPT, Google Gemini) to extract themes from conversations. Your use of these platforms is governed by their respective terms of service. Musing is not affiliated with or endorsed by Anthropic, OpenAI, or Google.</p>
+      </div>
+
+      <div class="content-section">
+        <h2>7. Disclaimer of Warranties</h2>
+        <p>The Extension is provided "as is" without warranties of any kind, either express or implied, including but not limited to:</p>
+        <ul>
+          <li>Warranties of merchantability or fitness for a particular purpose</li>
+          <li>Warranties that the Extension will be uninterrupted or error-free</li>
+          <li>Warranties regarding the accuracy or reliability of quotes displayed</li>
+        </ul>
+      </div>
+
+      <div class="content-section">
+        <h2>8. Limitation of Liability</h2>
+        <p>To the maximum extent permitted by law, Musing and its creators shall not be liable for any indirect, incidental, special, consequential, or punitive damages arising from your use of the Extension, including but not limited to:</p>
+        <ul>
+          <li>Loss of data or profits</li>
+          <li>Business interruption</li>
+          <li>Any other commercial damages or losses</li>
+        </ul>
+      </div>
+
+      <div class="content-section">
+        <h2>9. Changes to the Extension</h2>
+        <p>We reserve the right to modify, suspend, or discontinue the Extension at any time without notice. We are not liable to you or any third party for any modification, suspension, or discontinuation.</p>
+      </div>
+
+      <div class="content-section">
+        <h2>10. Changes to Terms</h2>
+        <p>We may update these Terms of Service from time to time. Changes will be reflected by updating the "Last updated" date. Continued use of the Extension after changes constitutes acceptance of the new terms.</p>
+      </div>
+
+      <div class="content-section">
+        <h2>11. Termination</h2>
+        <p>You may stop using Musing at any time by uninstalling the Extension. We reserve the right to terminate or restrict access to the Extension for users who violate these terms.</p>
+      </div>
+
+      <div class="content-section">
+        <h2>12. Contact</h2>
+        <p>For questions about these Terms of Service, please contact us at <a href="mailto:hello@musing.wiki">hello@musing.wiki</a>.</p>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="footer-content">
+      <div class="footer-brand">
+        <img src="icons/icon48.png" alt="musing">
+        <span>musing</span>
+      </div>
+      <div class="footer-links">
+        <a href="/privacy">Privacy</a>
+        <a href="/terms">Terms</a>
+      </div>
+    </div>
+    <p class="copyright">&copy; 2026 Musing. 🇯🇵 Built in Japan with quiet contemplation.</p>
+  </footer>
+</body>
+</html>

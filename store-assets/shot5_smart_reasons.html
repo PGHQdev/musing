@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html,body { width:1280px; height:800px; overflow:hidden; }
+  body {
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+    background: linear-gradient(160deg,#16324a 0%,#1c3f5c 45%,#8a3324 100%);
+    position:relative;
+    display:flex; flex-direction:column; align-items:center;
+  }
+  .rays { position:absolute; inset:0; opacity:0.12;
+    background: repeating-conic-gradient(from 0deg at 50% -20%, #f2a33b 0deg 8deg, transparent 8deg 16deg);
+  }
+  .headline { position:relative; z-index:2; margin-top:64px; text-align:center; }
+  .headline h1 { color:#fdf3e0; font-size:2.6rem; font-weight:800; letter-spacing:-0.01em; margin-bottom:0.6rem; }
+  .headline p { color:#f2c99b; font-size:1.15rem; font-weight:500; }
+  .browser { position:relative; z-index:2; margin-top:2.4rem; width:920px; border-radius:14px; overflow:hidden; box-shadow:0 30px 70px rgba(0,0,0,0.45); }
+  .titlebar { background:#e8eaed; height:38px; display:flex; align-items:center; padding:0 14px; gap:8px; }
+  .tl-dot { width:11px; height:11px; border-radius:50%; }
+  .tl-dot.r { background:#ff5f57; } .tl-dot.y { background:#febc2e; } .tl-dot.g { background:#28c840; }
+  .url { margin:0 auto; background:#fff; border-radius:6px; padding:5px 16px; font-size:0.8rem; color:#5f6368; width:340px; text-align:center; }
+  .page { background:#fff; height:410px; display:flex; flex-direction:column; align-items:center; justify-content:center; font-family:Georgia,serif; position:relative; }
+  .quote { font-size:1.4rem; font-style:italic; color:#202124; max-width:640px; text-align:center; line-height:1.55; margin-bottom:0.9rem; }
+  .quote::before { content:'"'; color:#1a73e8; font-size:2.4rem; vertical-align:-0.35em; margin-right:0.1em; line-height:0; }
+  .quote::after { content:'"'; color:#1a73e8; font-size:2.4rem; vertical-align:-0.35em; margin-left:0.1em; line-height:0; }
+  .author { font-size:0.95rem; color:#5f6368; letter-spacing:0.05em; margin-bottom:0.7rem; }
+  .author::before { content:'— '; }
+  .reason { font-family:-apple-system,sans-serif; font-size:0.78rem; color:#9aa0a6; font-style:italic; margin-bottom:1rem; }
+  .actions { display:flex; gap:0.6rem; font-family:-apple-system,sans-serif; }
+  .action-btn { background:rgba(74,158,255,0.12); border:1px solid rgba(74,158,255,0.3); color:#1a73e8; padding:0.5rem 1rem; border-radius:999px; font-size:0.82rem; font-weight:600; }
+  .action-btn.plain { background:rgba(0,0,0,0.04); border-color:rgba(0,0,0,0.08); color:#5f6368; }
+  .footnote { position:relative; z-index:2; margin-top:1.6rem; color:#f2c99b; font-size:0.95rem; font-weight:500; }
+</style>
+</head>
+<body>
+  <div class="rays"></div>
+  <div class="headline">
+    <h1>Save favorites. Optional AI context.</h1>
+    <p>Keep the quotes that resonate — and turn on Smart Reasons (BYOK) to see why one was chosen</p>
+  </div>
+  <div class="browser">
+    <div class="titlebar">
+      <span class="tl-dot r"></span><span class="tl-dot y"></span><span class="tl-dot g"></span>
+      <span class="url">New Tab</span>
+    </div>
+    <div class="page">
+      <p class="quote">Do not go where the path may lead, go instead where there is no path and leave a trail.</p>
+      <p class="author">Ralph Waldo Emerson</p>
+      <p class="reason">Shown because your recent chats explored career changes and creative risk</p>
+      <div class="actions">
+        <span class="action-btn plain">📋 Copy</span>
+        <span class="action-btn">★ Saved</span>
+      </div>
+    </div>
+  </div>
+  <div class="footnote">Smart Reasons uses your own API key — Groq, Claude, or OpenAI</div>
+</body>
+</html>

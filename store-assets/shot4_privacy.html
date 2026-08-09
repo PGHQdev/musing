@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html,body { width:1280px; height:800px; overflow:hidden; }
+  body {
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+    background: linear-gradient(160deg,#16324a 0%,#1c3f5c 55%,#8a3324 100%);
+    position:relative;
+    display:flex; flex-direction:column; align-items:center;
+  }
+  .rays { position:absolute; inset:0; opacity:0.12;
+    background: repeating-conic-gradient(from 0deg at 50% -20%, #f2a33b 0deg 8deg, transparent 8deg 16deg);
+  }
+  .headline { position:relative; z-index:2; margin-top:70px; text-align:center; }
+  .headline h1 { color:#fdf3e0; font-size:2.6rem; font-weight:800; letter-spacing:-0.01em; margin-bottom:0.6rem; }
+  .headline p { color:#f2c99b; font-size:1.15rem; font-weight:500; }
+  .flow { position:relative; z-index:2; display:flex; align-items:center; gap:1.4rem; margin-top:3.2rem; }
+  .stage { background:rgba(253,243,224,0.08); border:1px solid rgba(253,243,224,0.25); border-radius:16px; padding:1.4rem 1.6rem; text-align:center; width:220px; }
+  .stage .icon { font-size:2rem; margin-bottom:0.6rem; }
+  .stage .title { color:#fdf3e0; font-weight:700; font-size:1rem; margin-bottom:0.3rem; }
+  .stage .sub { color:#f2c99b; font-size:0.82rem; }
+  .arrow { color:#f2a33b; font-size:1.6rem; }
+  .badge-row { position:relative; z-index:2; display:flex; gap:0.8rem; margin-top:3rem; }
+  .badge { background:rgba(253,243,224,0.1); border:1px solid rgba(253,243,224,0.25); color:#fdf3e0; padding:0.55rem 1.1rem; border-radius:999px; font-size:0.9rem; font-weight:600; }
+</style>
+</head>
+<body>
+  <div class="rays"></div>
+  <div class="headline">
+    <h1>100% private, by architecture</h1>
+    <p>Your conversations never leave your browser — no accounts, no servers, no tracking</p>
+  </div>
+  <div class="flow">
+    <div class="stage">
+      <div class="icon">💬</div>
+      <div class="title">Your AI chats</div>
+      <div class="sub">Read locally, never uploaded</div>
+    </div>
+    <div class="arrow">→</div>
+    <div class="stage">
+      <div class="icon">⚙️</div>
+      <div class="title">On-device analysis</div>
+      <div class="sub">Themes extracted in your browser</div>
+    </div>
+    <div class="arrow">→</div>
+    <div class="stage">
+      <div class="icon">📖</div>
+      <div class="title">A matched quote</div>
+      <div class="sub">From a bundled local database</div>
+    </div>
+  </div>
+  <div class="badge-row">
+    <span class="badge">🔒 No servers</span>
+    <span class="badge">🚫 No tracking</span>
+    <span class="badge">👤 No accounts</span>
+  </div>
+</body>
+</html>

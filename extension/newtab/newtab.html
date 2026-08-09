@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>New Tab</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Georgia', 'Times New Roman', serif;
+      background: light-dark(#fff, #202124);
+      color: light-dark(#202124, #e8eaed);
+      padding: 2rem;
+      color-scheme: light dark;
+    }
+
+    .container {
+      max-width: 700px;
+      text-align: center;
+      animation: fadeIn 0.6s ease-out;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .quote-section {
+      min-height: 180px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .quote {
+      font-size: 1.75rem;
+      line-height: 1.6;
+      font-weight: 400;
+      margin-bottom: 1.5rem;
+      font-style: italic;
+      color: light-dark(#202124, #f0f0f0);
+      text-shadow: light-dark(none, 0 2px 4px rgba(0, 0, 0, 0.2));
+    }
+
+    .quote::before {
+      content: '"';
+      font-size: 3rem;
+      color: light-dark(#1a73e8, #8ab4f8);
+      line-height: 0;
+      vertical-align: -0.4em;
+      margin-right: 0.1em;
+    }
+
+    .quote::after {
+      content: '"';
+      font-size: 3rem;
+      color: light-dark(#1a73e8, #8ab4f8);
+      line-height: 0;
+      vertical-align: -0.4em;
+      margin-left: 0.1em;
+    }
+
+    .author {
+      font-size: 1.1rem;
+      color: light-dark(#5f6368, #9aa0a6);
+      font-style: normal;
+      letter-spacing: 0.05em;
+    }
+
+    .author::before {
+      content: '— ';
+    }
+
+    .recommendation-reason {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 0.75rem;
+      color: light-dark(#9aa0a6, #5f6368);
+      margin-top: 1rem;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      font-style: italic;
+    }
+
+    .recommendation-reason.show {
+      opacity: 1;
+    }
+
+    .quote-actions {
+      margin-top: 1.25rem;
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    .theme-chips {
+      margin-top: 1rem;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.4rem;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    .theme-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.35rem 0.55rem;
+      border-radius: 999px;
+      background: light-dark(rgba(0, 0, 0, 0.04), rgba(255, 255, 255, 0.06));
+      border: 1px solid light-dark(rgba(0, 0, 0, 0.06), rgba(255, 255, 255, 0.1));
+      color: inherit;
+      font-size: 0.72rem;
+      user-select: none;
+    }
+
+    .theme-chip-name {
+      opacity: 0.9;
+    }
+
+    .theme-chip-less {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0.1rem 0.25rem;
+      border-radius: 6px;
+      color: inherit;
+      opacity: 0.6;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .theme-chip-less:hover {
+      opacity: 0.9;
+      background: light-dark(rgba(0, 0, 0, 0.06), rgba(255, 255, 255, 0.1));
+    }
+
+    .theme-chip-less:focus,
+    .theme-chip-less:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 3px light-dark(rgba(26, 115, 232, 0.25), rgba(138, 180, 248, 0.35));
+    }
+
+    .theme-chip-less svg {
+      width: 12px;
+      height: 12px;
+    }
+
+    .action-btn {
+      background: light-dark(rgba(0, 0, 0, 0.04), rgba(255, 255, 255, 0.06));
+      border: 1px solid light-dark(rgba(0, 0, 0, 0.06), rgba(255, 255, 255, 0.1));
+      color: inherit;
+      cursor: pointer;
+      padding: 0.5rem 0.75rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: background 0.15s, border-color 0.15s, transform 0.15s;
+    }
+
+    .action-btn:hover {
+      background: light-dark(rgba(0, 0, 0, 0.07), rgba(255, 255, 255, 0.1));
+      border-color: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.16));
+    }
+
+    .action-btn:active {
+      transform: translateY(1px);
+    }
+
+    .action-btn:focus,
+    .action-btn:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 3px light-dark(rgba(26, 115, 232, 0.25), rgba(138, 180, 248, 0.35));
+    }
+
+    .action-btn svg {
+      width: 14px;
+      height: 14px;
+      opacity: 0.85;
+    }
+
+    .action-btn.selected {
+      background: light-dark(rgba(74, 158, 255, 0.12), rgba(138, 180, 248, 0.16));
+      border-color: light-dark(rgba(74, 158, 255, 0.2), rgba(138, 180, 248, 0.22));
+    }
+
+    .toast {
+      position: fixed;
+      top: 1rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(-16px);
+      background: light-dark(#fff, #2d2d30);
+      border: 1px solid light-dark(#dfe1e5, #3c4043);
+      border-radius: 999px;
+      box-shadow: light-dark(0 4px 14px rgba(0, 0, 0, 0.1), 0 4px 14px rgba(0, 0, 0, 0.4));
+      padding: 0.5rem 0.75rem;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 0.8rem;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease;
+      z-index: 1001;
+      max-width: 90vw;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .toast.show {
+      opacity: 1;
+      visibility: visible;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .refresh-btn {
+      position: fixed;
+      bottom: 1.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0.5rem;
+      border-radius: 50%;
+      color: light-dark(#9aa0a6, #5f6368);
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .refresh-btn:hover {
+      background: light-dark(rgba(0, 0, 0, 0.05), rgba(255, 255, 255, 0.1));
+      color: light-dark(#5f6368, #9aa0a6);
+    }
+
+    .refresh-btn:active {
+      transform: translateX(-50%) rotate(180deg);
+    }
+
+    .refresh-btn svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .branding {
+      position: fixed;
+      z-index: 1000;
+      bottom: 1.5rem;
+      left: 1.5rem;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 0.75rem;
+      color: light-dark(#bdc1c6, #5f6368);
+      letter-spacing: 0.02em;
+      user-select: none;
+      text-decoration: none;
+    }
+
+    .built-in {
+      position: fixed;
+      z-index: 1000;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 0.7rem;
+      color: light-dark(#bdc1c6, #5f6368);
+      letter-spacing: 0.02em;
+      user-select: none;
+      opacity: 0.7;
+    }
+
+    /* Loading state */
+    .loading .quote,
+    .loading .author {
+      opacity: 0.3;
+    }
+
+    /* Loading indicator */
+    .loading-indicator {
+      display: none;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 1;
+    }
+
+
+    .loading-indicator.show {
+      display: block;
+    }
+
+    .loading-spinner {
+      width: 24px;
+      height: 24px;
+      border: 2px solid light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.1));
+      border-top-color: light-dark(#1a73e8, #8ab4f8);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* Skeleton loading for quote */
+    .container.loading .quote::before,
+    .container.loading .quote::after {
+      opacity: 0.3;
+    }
+
+    .refresh-btn:focus,
+    .refresh-btn:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 3px light-dark(rgba(26, 115, 232, 0.25), rgba(138, 180, 248, 0.35));
+    }
+
+    /* Onboarding overlay */
+    .onboarding-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 2147483647; /* Max z-index to stay above Chrome UI */
+      justify-content: center;
+      align-items: center;
+    }
+
+    .onboarding-overlay.show {
+      display: flex;
+    }
+
+    .onboarding-card {
+      background: light-dark(#fff, #2d2d30);
+      border-radius: 16px;
+      padding: 2rem;
+      width: 480px;
+      max-width: 90%;
+      min-height: 420px;
+      text-align: center;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      animation: slideUp 0.3s ease-out;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .onboarding-step {
+      display: none;
+      flex-direction: column;
+      flex: 1;
+    }
+
+    .onboarding-step.active {
+      display: flex;
+    }
+
+    .onboarding-step-content {
+      flex: 1;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .onboarding-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+
+    .onboarding-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+      color: light-dark(#202124, #e8eaed);
+    }
+
+    .onboarding-text {
+      font-size: 1rem;
+      color: light-dark(#5f6368, #9aa0a6);
+      line-height: 1.6;
+      margin-bottom: 1.5rem;
+    }
+
+    .onboarding-image {
+      max-width: 100%;
+      border-radius: 8px;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .onboarding-tip {
+      background: light-dark(#f8f9fa, #3c3c3c);
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+      font-size: 0.875rem;
+      color: light-dark(#5f6368, #9aa0a6);
+      text-align: left;
+    }
+
+    .onboarding-tip strong {
+      color: light-dark(#202124, #e8eaed);
+    }
+
+    .onboarding-buttons {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: center;
+    }
+
+    .onboarding-btn {
+      padding: 0.75rem 1.5rem;
+      border-radius: 24px;
+      font-size: 0.9375rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: none;
+    }
+
+    .onboarding-btn-primary {
+      background: #4a9eff;
+      color: #fff;
+    }
+
+    .onboarding-btn-primary:hover {
+      background: #3a8eef;
+    }
+
+    .onboarding-btn-secondary {
+      background: light-dark(#f1f3f4, #3c3c3c);
+      color: light-dark(#5f6368, #9aa0a6);
+    }
+
+    .onboarding-btn-secondary:hover {
+      background: light-dark(#e8eaed, #4a4a4a);
+    }
+
+    .onboarding-dots {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+      margin-top: 1.5rem;
+    }
+
+    .onboarding-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: light-dark(#dadce0, #5f6368);
+      transition: background 0.2s;
+    }
+
+    .onboarding-dot.active {
+      background: #4a9eff;
+    }
+
+    .onboarding-arrow {
+      display: inline-block;
+      margin: 0 0.25rem;
+    }
+
+    /* Instruction steps */
+    .onboarding-instructions {
+      background: light-dark(#f8f9fa, #3c3c3c);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .instruction-step {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-align: left;
+    }
+
+    .instruction-number {
+      width: 28px;
+      height: 28px;
+      background: #4a9eff;
+      color: #fff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 0.875rem;
+      flex-shrink: 0;
+    }
+
+    .instruction-text {
+      font-size: 0.9375rem;
+      color: light-dark(#202124, #e8eaed);
+    }
+
+    .instruction-arrow {
+      font-size: 1.25rem;
+      color: light-dark(#9aa0a6, #5f6368);
+      margin: 0.5rem 0 0.5rem 0.6rem;
+    }
+
+    /* Notification banner */
+    .notification-banner {
+      position: fixed;
+      top: 1rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(-100px);
+      background: light-dark(#fff, #2d2d30);
+      border: 1px solid light-dark(#dfe1e5, #3c4043);
+      border-radius: 12px;
+      box-shadow: light-dark(0 4px 12px rgba(0, 0, 0, 0.1), 0 4px 12px rgba(0, 0, 0, 0.4));
+      padding: 0.75rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 0.875rem;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: transform 0.3s ease, opacity 0.3s ease, visibility 0.3s ease;
+      max-width: 90%;
+    }
+
+    .notification-banner.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .notification-icon {
+      font-size: 1.25rem;
+    }
+
+    .notification-content {
+      flex: 1;
+    }
+
+    .notification-title {
+      font-weight: 600;
+      color: light-dark(#202124, #e8eaed);
+    }
+
+    .notification-subtitle {
+      font-size: 0.75rem;
+      color: light-dark(#5f6368, #9aa0a6);
+      margin-top: 0.125rem;
+    }
+
+    .notification-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .notification-btn {
+      padding: 0.375rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: background 0.15s;
+      border: none;
+    }
+
+    .notification-btn-primary {
+      background: #4a9eff;
+      color: #fff;
+    }
+
+    .notification-btn-primary:hover {
+      background: #3a8eef;
+    }
+
+    .notification-btn-dismiss {
+      background: light-dark(rgba(0, 0, 0, 0.05), rgba(255, 255, 255, 0.1));
+      color: light-dark(#5f6368, #9aa0a6);
+    }
+
+    .notification-btn-dismiss:hover {
+      background: light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.15));
+    }
+
+    /* What's New modal (reuses onboarding styles) */
+    .whats-new-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 2147483647;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .whats-new-overlay.show {
+      display: flex;
+    }
+
+    .whats-new-card {
+      background: light-dark(#fff, #2d2d30);
+      border-radius: 16px;
+      padding: 2rem;
+      width: 420px;
+      max-width: 90%;
+      text-align: center;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      animation: slideUp 0.3s ease-out;
+    }
+
+    .whats-new-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+
+    .whats-new-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: light-dark(#202124, #e8eaed);
+    }
+
+    .whats-new-version {
+      font-size: 0.875rem;
+      color: light-dark(#5f6368, #9aa0a6);
+      margin-bottom: 1.5rem;
+    }
+
+    .whats-new-list {
+      text-align: left;
+      margin-bottom: 1.5rem;
+    }
+
+    .whats-new-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      padding: 0.75rem;
+      background: light-dark(#f8f9fa, #3c3c3c);
+      border-radius: 8px;
+      margin-bottom: 0.5rem;
+    }
+
+    .whats-new-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .whats-new-item-icon {
+      font-size: 1.25rem;
+      flex-shrink: 0;
+    }
+
+    .whats-new-item-text {
+      font-size: 0.875rem;
+      color: light-dark(#202124, #e8eaed);
+      line-height: 1.4;
+    }
+
+    .whats-new-buttons {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: center;
+    }
+
+    .whats-new-btn {
+      padding: 0.75rem 1.5rem;
+      border-radius: 24px;
+      font-size: 0.9375rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: none;
+      background: #4a9eff;
+      color: #fff;
+    }
+
+    .whats-new-btn:hover {
+      background: #3a8eef;
+    }
+  </style>
+</head>
+<body>
+  <div class="container" id="container">
+    <div class="quote-section">
+      <div class="loading-indicator" id="loading-indicator">
+        <div class="loading-spinner"></div>
+      </div>
+      <p class="quote" id="quote">The journey of a thousand miles begins with a single step.</p>
+      <p class="author" id="author">Lao Tzu</p>
+      <p class="recommendation-reason" id="recommendation-reason"></p>
+      <div class="theme-chips" id="theme-chips"></div>
+      <div class="quote-actions" id="quote-actions">
+        <button class="action-btn" id="copy-quote" type="button" aria-label="Copy quote">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="9" y="9" width="13" height="13" rx="2"></rect>
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+          </svg>
+          <span>Copy</span>
+        </button>
+        <button class="action-btn" id="favorite-quote" type="button" aria-label="Favorite quote" aria-pressed="false">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 17.27L18.18 21 16.54 13.97 22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path>
+          </svg>
+          <span id="favorite-quote-label">Save</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notification banner -->
+  <div class="notification-banner" id="notification-banner">
+    <span class="notification-icon" id="notification-icon"></span>
+    <div class="notification-content">
+      <div class="notification-title" id="notification-title"></div>
+      <div class="notification-subtitle" id="notification-subtitle"></div>
+    </div>
+    <div class="notification-actions">
+      <button class="notification-btn notification-btn-primary" id="notification-view">View</button>
+      <button class="notification-btn notification-btn-dismiss" id="notification-dismiss">Dismiss</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <a class="branding" href="https://musing.wiki" target="_blank">musing</a>
+  <span class="built-in">🇯🇵 Built in Japan</span>
+
+  <button class="refresh-btn" id="refresh" type="button" title="New quote" aria-label="New quote">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+      <path d="M3 3v5h5"/>
+      <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/>
+      <path d="M21 21v-5h-5"/>
+    </svg>
+  </button>
+
+  <!-- Onboarding overlay -->
+  <div class="onboarding-overlay" id="onboarding">
+    <div class="onboarding-card">
+      <!-- Step 1: Welcome -->
+      <div class="onboarding-step active" data-step="1">
+        <div class="onboarding-icon">✨</div>
+        <h2 class="onboarding-title">welcome to musing</h2>
+        <p class="onboarding-text">
+          your new tab now shows inspiring quotes from history's greatest thinkers,
+          tailored to your AI conversations.
+        </p>
+        <div class="onboarding-tip">
+          <strong>how it works:</strong> as you chat with Claude or ChatGPT,
+          musing learns your interests and shows relevant quotes here.
+        </div>
+        <div class="onboarding-buttons">
+          <button class="onboarding-btn onboarding-btn-secondary" id="onboarding-skip">Skip</button>
+          <button class="onboarding-btn onboarding-btn-primary" id="onboarding-next-1">Next <span class="onboarding-arrow">→</span></button>
+        </div>
+        <div class="onboarding-dots">
+          <div class="onboarding-dot active"></div>
+          <div class="onboarding-dot"></div>
+          <div class="onboarding-dot"></div>
+        </div>
+      </div>
+
+      <!-- Step 2: Hide Chrome footer -->
+      <div class="onboarding-step" data-step="2">
+        <h2 class="onboarding-title">clean up your view</h2>
+        <p class="onboarding-text">
+          for a cleaner experience, hide Chrome's default shortcuts bar.
+        </p>
+        <div class="onboarding-instructions">
+          <div class="instruction-step">
+            <span class="instruction-number">1</span>
+            <span class="instruction-text">Right-click anywhere on this page</span>
+          </div>
+          <div class="instruction-arrow">↓</div>
+          <div class="instruction-step">
+            <span class="instruction-number">2</span>
+            <span class="instruction-text">Select "Hide footer on New Tab page"</span>
+          </div>
+          <div class="instruction-arrow">↓</div>
+          <div class="instruction-step">
+            <span class="instruction-number">3</span>
+            <span class="instruction-text">Enjoy a clean, minimal view!</span>
+          </div>
+        </div>
+        <div class="onboarding-buttons">
+          <button class="onboarding-btn onboarding-btn-secondary" id="onboarding-back-2"><span class="onboarding-arrow">←</span> Back</button>
+          <button class="onboarding-btn onboarding-btn-primary" id="onboarding-next-2">Next <span class="onboarding-arrow">→</span></button>
+        </div>
+        <div class="onboarding-dots">
+          <div class="onboarding-dot"></div>
+          <div class="onboarding-dot active"></div>
+          <div class="onboarding-dot"></div>
+        </div>
+      </div>
+
+      <!-- Step 3: Finish -->
+      <div class="onboarding-step" data-step="3">
+        <div class="onboarding-icon">🎉</div>
+        <h2 class="onboarding-title">you're all set!</h2>
+        <p class="onboarding-text">
+          start chatting with Claude or ChatGPT, and watch your quotes become
+          more personalized over time.
+        </p>
+        <div class="onboarding-tip">
+          <strong>settings:</strong> click the musing extension icon in your
+          toolbar to adjust settings or sync manually.
+        </div>
+        <div class="onboarding-buttons">
+          <button class="onboarding-btn onboarding-btn-primary" id="onboarding-finish">get started</button>
+        </div>
+        <div class="onboarding-dots">
+          <div class="onboarding-dot"></div>
+          <div class="onboarding-dot"></div>
+          <div class="onboarding-dot active"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- What's New modal -->
+  <div class="whats-new-overlay" id="whats-new">
+    <div class="whats-new-card">
+      <div class="whats-new-icon" id="whats-new-icon"></div>
+      <h2 class="whats-new-title" id="whats-new-title">What's New</h2>
+      <p class="whats-new-version" id="whats-new-version"></p>
+      <div class="whats-new-list" id="whats-new-list">
+        <!-- Items rendered by JS -->
+      </div>
+      <div class="whats-new-buttons">
+        <button class="whats-new-btn" id="whats-new-close">Got it</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../lib/storage.js"></script>
+  <script src="newtab.js"></script>
+</body>
+</html>

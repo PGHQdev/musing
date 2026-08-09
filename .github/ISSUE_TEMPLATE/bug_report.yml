@@ -1,0 +1,58 @@
+name: Bug report
+description: Something is not working as expected
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a bug. Please do not include private conversation content in this report.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: What did you expect, and what happened instead?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open a chat on ...
+        2. Open a new tab
+        3. ...
+    validations:
+      required: true
+  - type: dropdown
+    id: site
+    attributes:
+      label: Which AI site was involved (if any)?
+      options:
+        - Not site-specific
+        - Claude
+        - ChatGPT
+        - Gemini
+    validations:
+      required: false
+  - type: input
+    id: version
+    attributes:
+      label: Extension version
+      description: See chrome://extensions or the popup.
+      placeholder: "1.2.2"
+    validations:
+      required: true
+  - type: input
+    id: chrome
+    attributes:
+      label: Chrome version
+      placeholder: "e.g. 127.0.6533.0"
+    validations:
+      required: false
+  - type: checkboxes
+    id: byok
+    attributes:
+      label: Configuration
+      options:
+        - label: Smart Reasons (BYOK) is enabled
+        - label: Browser-history themes are enabled

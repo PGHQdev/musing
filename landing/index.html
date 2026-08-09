@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Musing transforms your new tab into a personalized sanctuary of timeless quotes. Local by default, with optional BYOK intelligence for smarter explanations.">
+  <title>Musing - Wisdom from the Past for Your Present</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/icon32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="icons/icon16.png">
+  <link rel="apple-touch-icon" href="icons/icon128.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@800&display=swap" rel="stylesheet">
+  <script defer src="https://cloud.umami.is/script.js" data-website-id="891cdfa8-1db7-4ef6-81a2-0bf8cba4ddd9"></script>
+  <script>
+    // Hide A/B-tested elements until ab-test.js assigns a variant;
+    // fail open after 1s in case ab-test.js never runs.
+    document.documentElement.classList.add('ab-pending');
+    setTimeout(function () {
+      document.documentElement.classList.remove('ab-pending');
+    }, 1000);
+  </script>
+  <style>
+    .ab-pending .tagline,
+    .ab-pending .subtitle,
+    .ab-pending .cta-button {
+      visibility: hidden;
+    }
+  </style>
+  <style>
+    :root {
+      --accent: #4a9eff;
+      --accent-hover: #6bb0ff;
+      --bg-primary: #202124;
+      --bg-secondary: #292a2d;
+      --bg-tertiary: #35363a;
+      --text-primary: #e8eaed;
+      --text-secondary: #9aa0a6;
+      --radius: 24px;
+      --radius-sm: 12px;
+      --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg-primary: #ffffff;
+        --bg-secondary: #f8f9fa;
+        --bg-tertiary: #e8eaed;
+        --text-primary: #202124;
+        --text-secondary: #5f6368;
+      }
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* Hero Section */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      position: relative;
+      padding: 80px 24px;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: radial-gradient(ellipse at 50% 0%, rgba(74, 158, 255, 0.15) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      max-width: 900px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin-bottom: 48px;
+    }
+
+    .logo img {
+      width: 128px;
+      height: 128px;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .brand-text {
+      font-family: 'Nunito', sans-serif;
+      font-weight: 800;
+      color: #fff;
+      text-shadow:
+        -2px -2px 0 #3d2914,
+        2px -2px 0 #3d2914,
+        -2px 2px 0 #3d2914,
+        2px 2px 0 #3d2914,
+        0 -2px 0 #3d2914,
+        0 2px 0 #3d2914,
+        -2px 0 0 #3d2914,
+        2px 0 0 #3d2914,
+        0 4px 6px rgba(0, 0, 0, 0.3);
+      display: inline-block;
+      transform: rotate(-2deg);
+      letter-spacing: 0.5px;
+    }
+
+    .brand-text.small {
+      font-size: 1.5rem;
+      text-shadow:
+        -1.5px -1.5px 0 #3d2914,
+        1.5px -1.5px 0 #3d2914,
+        -1.5px 1.5px 0 #3d2914,
+        1.5px 1.5px 0 #3d2914,
+        0 -1.5px 0 #3d2914,
+        0 1.5px 0 #3d2914,
+        -1.5px 0 0 #3d2914,
+        1.5px 0 0 #3d2914,
+        0 3px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .tagline {
+      font-family: Georgia, 'Times New Roman', serif;
+      font-size: clamp(2.5rem, 6vw, 4rem);
+      font-weight: 400;
+      font-style: italic;
+      line-height: 1.2;
+      margin-bottom: 24px;
+      color: var(--text-primary);
+    }
+
+    .subtitle {
+      font-size: clamp(1.1rem, 2vw, 1.4rem);
+      color: var(--text-secondary);
+      max-width: 700px;
+      margin: 0 auto 48px;
+    }
+
+    .cta-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      background: var(--accent);
+      color: #fff;
+      padding: 18px 36px;
+      border-radius: var(--radius);
+      border: none;
+      text-decoration: none;
+      font-size: 1.2rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: transform var(--transition), box-shadow var(--transition), background var(--transition);
+      box-shadow: 0 4px 24px rgba(74, 158, 255, 0.3);
+    }
+
+    .cta-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(74, 158, 255, 0.4);
+      background: var(--accent-hover);
+    }
+
+    .cta-button svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    /* UI Mockup */
+    .ui-showcase {
+      margin-top: 80px;
+      position: relative;
+      width: 100%;
+      max-width: 900px;
+      perspective: 1000px;
+    }
+
+    .browser-mockup {
+      background: var(--bg-secondary);
+      border-radius: 12px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--bg-tertiary);
+      overflow: hidden;
+      transform: rotateX(2deg);
+      transition: transform 0.5s ease;
+    }
+
+    .browser-mockup:hover {
+      transform: rotateX(0deg);
+    }
+
+    .browser-bar {
+      background: var(--bg-tertiary);
+      padding: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .browser-dots {
+      display: flex;
+      gap: 6px;
+    }
+
+    .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    .dot.red { background: #ff5f56; }
+    .dot.yellow { background: #ffbd2e; }
+    .dot.green { background: #27c93f; }
+
+    .browser-content {
+      padding: 60px;
+      min-height: 400px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      background: var(--bg-primary);
+    }
+
+    .mock-quote {
+      font-family: Georgia, serif;
+      font-size: 2rem;
+      font-style: italic;
+      margin-bottom: 24px;
+      max-width: 80%;
+    }
+
+    .mock-author {
+      color: var(--text-secondary);
+      font-size: 1.1rem;
+    }
+
+    .mock-search {
+      margin-top: 60px;
+      width: 60%;
+      height: 48px;
+      background: var(--bg-secondary);
+      border-radius: 24px;
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      color: var(--text-secondary);
+      border: 1px solid var(--bg-tertiary);
+    }
+
+    /* Section Styles */
+    section {
+      padding: 120px 24px;
+    }
+
+    .section-title {
+      font-size: clamp(2rem, 4vw, 3rem);
+      text-align: center;
+      margin-bottom: 24px;
+      font-weight: 700;
+    }
+
+    .section-subtitle {
+      text-align: center;
+      color: var(--text-secondary);
+      max-width: 700px;
+      margin: 0 auto 80px;
+      font-size: 1.25rem;
+    }
+
+    /* How It Works */
+    .how-it-works {
+      background: var(--bg-secondary);
+    }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 40px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .step {
+      padding: 40px;
+      background: var(--bg-primary);
+      border-radius: var(--radius);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .step-number {
+      position: absolute;
+      top: -20px;
+      right: -20px;
+      font-size: 8rem;
+      font-weight: 800;
+      color: var(--bg-secondary);
+      opacity: 0.5;
+      line-height: 1;
+      z-index: 0;
+    }
+
+    .step-content {
+      position: relative;
+      z-index: 1;
+    }
+
+    .step h3 {
+      font-size: 1.5rem;
+      margin-bottom: 16px;
+      color: var(--accent);
+    }
+
+    .step p {
+      color: var(--text-secondary);
+      font-size: 1.1rem;
+    }
+
+    /* Features */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 32px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .feature {
+      padding: 32px;
+      background: var(--bg-secondary);
+      border-radius: var(--radius);
+      transition: transform 0.3s ease;
+    }
+
+    .feature:hover {
+      transform: translateY(-5px);
+    }
+
+    .feature-icon {
+      width: 56px;
+      height: 56px;
+      background: rgba(74, 158, 255, 0.1);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 24px;
+      color: var(--accent);
+    }
+
+    .feature h3 {
+      font-size: 1.25rem;
+      margin-bottom: 12px;
+    }
+
+    /* Testimonials */
+    .testimonials {
+      background: var(--bg-tertiary);
+    }
+
+    .testimonial-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 32px;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .testimonial {
+      background: var(--bg-primary);
+      padding: 40px;
+      border-radius: var(--radius);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+
+    .testimonial-text {
+      font-style: italic;
+      font-size: 1.1rem;
+      margin-bottom: 24px;
+      color: var(--text-primary);
+    }
+
+    .testimonial-author {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .author-avatar {
+      width: 48px;
+      height: 48px;
+      background: var(--accent);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+    }
+
+    .author-info div:first-child {
+      font-weight: 600;
+    }
+    
+    .author-info div:last-child {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+    }
+
+    /* Footer */
+    footer {
+      padding: 60px 24px;
+      background: var(--bg-secondary);
+      border-top: 1px solid var(--bg-tertiary);
+      text-align: center;
+    }
+
+    .footer-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 32px;
+    }
+
+    .footer-links a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      margin: 0 16px;
+      font-size: 1.1rem;
+    }
+    
+    .footer-links a:hover {
+      color: var(--accent);
+    }
+
+    /* Animation Utilities */
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: all 0.8s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media (max-width: 768px) {
+      .hero { padding: 60px 20px; }
+      .tagline { font-size: 2.5rem; }
+      .browser-content { padding: 30px; min-height: 300px; }
+      .mock-quote { font-size: 1.5rem; }
+      .mock-search { width: 90%; }
+      .steps { grid-template-columns: 1fr; }
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-content">
+      <div class="logo">
+        <img src="icons/icon128.png" alt="Musing Logo">
+      </div>
+      <h1 class="tagline">let the wisdom of the past guide your present</h1>
+      <p class="subtitle"><span class="brand-text">musing</span> transforms your new tab into a personalized sanctuary of timeless quotes — local by default, with optional BYOK intelligence.</p>
+      
+      <a href="https://chromewebstore.google.com/detail/hkfpdamehcnbhfeilamlbeabgdlgnjfk" target="_blank" rel="noopener" class="cta-button">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+        </svg>
+        Add to Chrome
+      </a>
+    </div>
+
+    <!-- Visual Feature Representation (CSS Mockup) -->
+    <div class="ui-showcase reveal">
+      <div class="browser-mockup">
+        <div class="browser-bar">
+          <div class="browser-dots">
+            <div class="dot red"></div>
+            <div class="dot yellow"></div>
+            <div class="dot green"></div>
+          </div>
+        </div>
+        <div class="browser-content">
+          <div class="mock-quote">"The only true wisdom is in knowing you know nothing."</div>
+          <div class="mock-author">— Socrates</div>
+          <div class="mock-search">Search Google or type a URL...</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works -->
+  <section id="how-it-works" class="how-it-works">
+    <div class="container">
+      <h2 class="section-title">How It Works</h2>
+      <p class="section-subtitle">A privacy-first approach to personalization</p>
+      
+      <div class="steps">
+        <div class="step reveal">
+          <div class="step-number">1</div>
+          <div class="step-content">
+            <h3>Chat Naturally</h3>
+            <p>Use your favorite AI assistants like Claude, ChatGPT, or Gemini as you normally would.</p>
+          </div>
+        </div>
+        <div class="step reveal">
+          <div class="step-number">2</div>
+          <div class="step-content">
+            <h3>Local Learning</h3>
+            <p><span class="brand-text small">Musing</span> analyzes conversation themes directly in your browser. No data is ever sent to our servers.</p>
+          </div>
+        </div>
+        <div class="step reveal">
+          <div class="step-number">3</div>
+          <div class="step-content">
+            <h3>Instant Inspiration</h3>
+            <p>Open a new tab to see a curated quote that resonates with your current thoughts and context.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Feature Highlights -->
+  <section class="features">
+    <div class="container">
+      <h2 class="section-title">Designed for Focus</h2>
+      <p class="section-subtitle">Everything you need, nothing you don't</p>
+      
+      <div class="features-grid">
+        <div class="feature reveal">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <h3>Your Thoughts Stay Yours</h3>
+          <p>Everything happens on your device. Your conversations and browsing never leave your browser.</p>
+        </div>
+        <div class="feature reveal">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          </div>
+          <h3>Instant & Always Ready</h3>
+          <p>Your new tab opens immediately—no loading, no waiting. Wisdom at your fingertips.</p>
+        </div>
+        <div class="feature reveal">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+          </div>
+          <h3>Easy on Your Eyes</h3>
+          <p>Seamlessly matches your system's light or dark mode, so it always feels natural.</p>
+        </div>
+        <div class="feature reveal">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          </div>
+          <h3>Quotes That Resonate</h3>
+          <p>Not random quotes—wisdom that actually relates to what you're thinking about right now.</p>
+        </div>
+        <div class="feature reveal">
+          <div class="feature-icon">
+             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          </div>
+          <h3>Understand the Why</h3>
+          <p>Optionally see why each quote was chosen for you—bring your own AI key for personalized insights.</p>
+        </div>
+        <div class="feature reveal">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          </div>
+          <h3>Works with Your Favorite AI</h3>
+          <p>Seamlessly integrates with Claude, ChatGPT, Gemini, and more—use whatever you prefer.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonials -->
+  <section class="testimonials">
+    <div class="container">
+      <h2 class="section-title">What Users Say</h2>
+      <div class="testimonial-grid">
+        <div class="testimonial reveal">
+          <p class="testimonial-text">"Finally, a new tab extension that actually respects my privacy. I love seeing quotes that match what I was just working on."</p>
+          <div class="testimonial-author">
+            <div class="author-avatar">S</div>
+            <div class="author-info">
+              <div>Sarah J.</div>
+              <div>Software Engineer</div>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial reveal">
+          <p class="testimonial-text">"The local-first approach is brilliant. It feels incredibly fast and I don't have to worry about my data leaking."</p>
+          <div class="testimonial-author">
+            <div class="author-avatar">M</div>
+            <div class="author-info">
+              <div>Michael C.</div>
+              <div>Product Designer</div>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial reveal">
+          <p class="testimonial-text">"Simple, beautiful, and smart. It helps me pause and reflect for a second before diving into the next task."</p>
+          <div class="testimonial-author">
+            <div class="author-avatar">A</div>
+            <div class="author-info">
+              <div>Alex R.</div>
+              <div>Writer</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-content">
+      <div class="logo">
+        <img src="icons/icon48.png" alt="Musing Logo" style="width: 48px; height: 48px;">
+        <span class="brand-text small">musing</span>
+      </div>
+      <div class="footer-links">
+        <a href="/privacy.html">Privacy Policy</a>
+        <a href="/terms.html">Terms of Service</a>
+      </div>
+      <p>&copy; 2026 <span class="brand-text small">Musing</span>.<br>🇯🇵 made in japan</p>
+    </div>
+  </footer>
+
+  <script src="ab-test.js"></script>
+  <script>
+    // Intersection Observer for scroll animations
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+    // Dynamic Quote in Mockup
+    const quotes = [
+      { text: "The only true wisdom is in knowing you know nothing.", author: "Socrates" },
+      { text: "In the middle of difficulty lies opportunity.", author: "Albert Einstein" },
+      { text: "The unexamined life is not worth living.", author: "Socrates" }
+    ];
+    
+    let qIndex = 0;
+    const quoteEl = document.querySelector('.mock-quote');
+    const authorEl = document.querySelector('.mock-author');
+    
+    setInterval(() => {
+      qIndex = (qIndex + 1) % quotes.length;
+      quoteEl.style.opacity = 0;
+      authorEl.style.opacity = 0;
+      
+      setTimeout(() => {
+        quoteEl.textContent = `"${quotes[qIndex].text}"`;
+        authorEl.textContent = `— ${quotes[qIndex].author}`;
+        quoteEl.style.opacity = 1;
+        authorEl.style.opacity = 1;
+      }, 500);
+    }, 5000);
+  </script>
+</body>
+</html>

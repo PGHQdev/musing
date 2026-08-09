@@ -1,0 +1,20 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Syntax-check JS
+        run: |
+          find extension landing -name '*.js' -not -path '*/node_modules/*' -print0 |
+            while IFS= read -r -d '' f; do node --check "$f"; done
+      - name: Syntax-check scripts
+        run: bash -n scripts/zip-extension.sh

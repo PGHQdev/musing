@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Privacy Policy for Musing - Local processing by default, optional bring-your-own-key AI, no analytics in the extension.">
+  <title>Privacy Policy - Musing</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/icon32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="icons/icon16.png">
+  <link rel="apple-touch-icon" href="icons/icon128.png">
+  <style>
+    :root {
+      --accent: #4a9eff;
+      --accent-hover: #6bb0ff;
+      --bg-primary: #202124;
+      --bg-secondary: #292a2d;
+      --bg-tertiary: #35363a;
+      --text-primary: #e8eaed;
+      --text-secondary: #9aa0a6;
+      --radius: 24px;
+      --radius-sm: 12px;
+      --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg-primary: #ffffff;
+        --bg-secondary: #f8f9fa;
+        --bg-tertiary: #e8eaed;
+        --text-primary: #202124;
+        --text-secondary: #5f6368;
+      }
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* Header */
+    header {
+      padding: 24px;
+      border-bottom: 1px solid var(--bg-tertiary);
+    }
+
+    .header-content {
+      max-width: 800px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      text-decoration: none;
+      letter-spacing: 0.05em;
+      text-transform: lowercase;
+    }
+
+    .logo img {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+    }
+
+    .back-link {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: color var(--transition);
+    }
+
+    .back-link:hover {
+      color: var(--accent);
+    }
+
+    /* Main Content */
+    main {
+      padding: 64px 24px;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 16px;
+    }
+
+    .last-updated {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      margin-bottom: 48px;
+    }
+
+    .content-section {
+      margin-bottom: 40px;
+    }
+
+    h2 {
+      font-size: 1.35rem;
+      margin-bottom: 16px;
+      color: var(--text-primary);
+    }
+
+    p {
+      color: var(--text-secondary);
+      margin-bottom: 16px;
+    }
+
+    ul {
+      color: var(--text-secondary);
+      margin-left: 24px;
+      margin-bottom: 16px;
+    }
+
+    li {
+      margin-bottom: 8px;
+    }
+
+    .highlight-box {
+      background: var(--bg-secondary);
+      border-radius: var(--radius-sm);
+      padding: 24px;
+      margin: 24px 0;
+    }
+
+    .highlight-box p {
+      margin-bottom: 0;
+    }
+
+    .highlight-box strong {
+      color: var(--text-primary);
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    /* Footer */
+    footer {
+      padding: 48px 24px;
+      text-align: center;
+      border-top: 1px solid var(--bg-tertiary);
+    }
+
+    .footer-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .footer-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .footer-brand img {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+    }
+
+    .footer-brand span {
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .footer-links {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .footer-links a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: color var(--transition);
+      font-size: 0.9rem;
+    }
+
+    .footer-links a:hover {
+      color: var(--accent);
+    }
+
+    .copyright {
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      margin-top: 32px;
+    }
+
+    @media (max-width: 768px) {
+      main {
+        padding: 48px 20px;
+      }
+
+      h1 {
+        font-size: 2rem;
+      }
+
+      .footer-content {
+        flex-direction: column;
+        gap: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <a href="/" class="logo">
+        <img src="icons/icon48.png" alt="musing icon">
+        musing
+      </a>
+      <a href="/" class="back-link">&larr; Back to home</a>
+    </div>
+  </header>
+
+  <main>
+    <div class="container">
+      <h1>Privacy Policy</h1>
+      <p class="last-updated">Last updated: August 9, 2026</p>
+
+      <div class="highlight-box">
+        <p><strong>The short version:</strong> Musing runs locally on your device by default, and the extension ships no analytics. The extension sends nothing to any server we operate. If you enable the optional Smart Reasons feature with your own API key, short conversation-derived text goes directly from your browser to the AI provider you chose — and only then. This website (musing.wiki) uses privacy-focused, cookieless analytics, and stores your email only if you choose to join our waitlist.</p>
+      </div>
+
+      <div class="content-section">
+        <h2>Our Privacy Commitment</h2>
+        <p>Musing was built with privacy as a core principle, not an afterthought. We believe personalization shouldn't require surveillance. By default, everything Musing does happens entirely on your device; the only exception is the optional Smart Reasons feature described below, which you must explicitly enable with your own API key.</p>
+      </div>
+
+      <div class="content-section">
+        <h2>What Data We Access</h2>
+        <p>Musing reads conversation text from AI chat platforms (Claude, ChatGPT, and Google Gemini) that you visit. This access is used solely to extract themes and interests for matching quotes.</p>
+        <ul>
+          <li><strong>Conversation snippets:</strong> Short excerpts from your AI conversations (max 2,000 characters each)</li>
+          <li><strong>Extracted themes:</strong> Topics like "programming," "creativity," or "career" identified from your conversations</li>
+          <li><strong>User preferences:</strong> Your settings such as enabled platforms and display options</li>
+        </ul>
+      </div>
+
+      <div class="content-section">
+        <h2>How Your Data Is Processed</h2>
+        <p>By default, all processing happens locally in your browser:</p>
+        <ul>
+          <li>Theme extraction uses local keyword matching</li>
+          <li>Quote matching happens on-device using a bundled database</li>
+          <li>The extension sends no data to servers we operate — we have none that receive user data</li>
+          <li>The extension contains no analytics, tracking pixels, or third-party scripts</li>
+        </ul>
+      </div>
+
+      <div class="content-section">
+        <h2>Optional Smart Reasons (Bring Your Own Key)</h2>
+        <p>Musing offers an optional Smart Reasons feature that explains why a quote was chosen for you. It is off by default and only works if you add your own API key for a supported AI provider: Groq, Anthropic, or OpenAI.</p>
+        <ul>
+          <li><strong>What is sent:</strong> the selected quote plus short conversation-derived text (themes and brief snippets) used to generate the explanation</li>
+          <li><strong>Where it goes:</strong> directly from your browser to the provider you chose (api.groq.com, api.anthropic.com, or api.openai.com) — no server of ours sits in between</li>
+          <li><strong>When:</strong> only after you enable Smart Reasons and enter your own API key; disabling it stops all external requests</li>
+          <li><strong>Your key:</strong> stored locally in your browser and used only for these requests</li>
+          <li><strong>Provider handling:</strong> data sent to your chosen provider is processed under that provider's own privacy policy</li>
+        </ul>
+      </div>
+
+      <div class="content-section">
+        <h2>Where Your Data Is Stored</h2>
+        <p>All data is stored in your browser's local storage (<code>chrome.storage.local</code>):</p>
+        <ul>
+          <li>Data stays on your device only</li>
+          <li>Data is not synced to your Google account</li>
+          <li>Data is automatically deleted when you uninstall the extension</li>
+          <li>Data is sandboxed and inaccessible to other extensions or websites</li>
+        </ul>
+      </div>
+
+      <div class="content-section">
+        <h2>Data Security</h2>
+        <p>Musing implements several security measures:</p>
+        <ul>
+          <li><strong>Content Security Policy:</strong> Prevents execution of any external scripts</li>
+          <li><strong>Input sanitization:</strong> Removes emails, URLs with tokens, API keys, and phone numbers before processing</li>
+          <li><strong>Extension isolation:</strong> Your data cannot be accessed by other extensions</li>
+        </ul>
+      </div>
+
+      <div class="content-section">
+        <h2>Your Control</h2>
+        <p>You have full control over your data:</p>
+        <ul>
+          <li><strong>Toggle data sources:</strong> Enable or disable collection from specific platforms in settings</li>
+          <li><strong>Clear data:</strong> Delete all stored data anytime via the extension popup</li>
+          <li><strong>Uninstall:</strong> Removing the extension deletes all associated data</li>
+        </ul>
+      </div>
+
+      <div class="content-section">
+        <h2>What We Don't Do</h2>
+        <ul>
+          <li>We don't operate any servers that receive data from the extension</li>
+          <li>We don't put analytics or tracking in the extension</li>
+          <li>We don't sell or share any information</li>
+          <li>We don't store your full conversations — only brief snippets for theme extraction</li>
+          <li>We don't require an account or login</li>
+          <li>We don't send anything to AI providers unless you enable Smart Reasons with your own key</li>
+        </ul>
+      </div>
+
+      <div class="content-section">
+        <h2>Website Analytics</h2>
+        <p>This website (musing.wiki) uses privacy-focused analytics — Umami and Cloudflare Web Analytics — to understand aggregate usage. Umami loads directly from Umami Cloud (umami.is) and reports to its collector; Cloudflare Web Analytics runs at the network edge. Both are cookieless, collect only aggregate, anonymized usage data, and do not build visitor profiles. They run on this website only; the extension itself contains no analytics.</p>
+      </div>
+
+      <div class="content-section">
+        <h2>Website Waitlist</h2>
+        <p>If you choose to join our launch waitlist on this website, we store the email address you submit, along with the request time and browser user-agent string, so we can notify you when Musing launches. We use it for that purpose only. We do not sell or share it. This is optional and separate from the extension, which stores no email and operates no waitlist.</p>
+      </div>
+
+      <div class="content-section">
+        <h2>Changes to This Policy</h2>
+        <p>If we make changes to this privacy policy, we will update the "Last updated" date above. For significant changes, we will notify users through the extension.</p>
+      </div>
+
+      <div class="content-section">
+        <h2>Contact Us</h2>
+        <p>If you have any questions, please contact us at <a href="mailto:hello@musing.wiki">hello@musing.wiki</a>.</p>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="footer-content">
+      <div class="footer-brand">
+        <img src="icons/icon48.png" alt="musing">
+        <span>musing</span>
+      </div>
+      <div class="footer-links">
+        <a href="/privacy">Privacy</a>
+        <a href="/terms">Terms</a>
+      </div>
+    </div>
+    <p class="copyright">&copy; 2026 Musing. 🇯🇵 Built in Japan with quiet contemplation.</p>
+  </footer>
+</body>
+</html>

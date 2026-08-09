@@ -1,0 +1,18 @@
+{
+  "name": "musing",
+  "compatibility_date": "2026-01-20",
+  "main": "worker.js",
+  "assets": {
+    "directory": "./",
+    "binding": "ASSETS",
+    // Worker must run first so /api/waitlist, the analytics proxies,
+    // and the security headers apply to every response.
+    "run_worker_first": true
+  },
+  "kv_namespaces": [
+    { "binding": "musing_waitlist", "id": "30051d34cdd34de688ff7334335a580c" }
+  ],
+  "observability": {
+    "enabled": true
+  }
+}

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html,body { width:1280px; height:800px; overflow:hidden; }
+  body {
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    font-family: Georgia, 'Times New Roman', serif;
+    background:#ffffff; color:#202124;
+  }
+  .container { max-width:840px; text-align:center; display:flex; flex-direction:column; align-items:center; }
+  .quote { font-size:2.1rem; line-height:1.6; font-weight:400; margin-bottom:1.75rem; font-style:italic; color:#202124; }
+  .quote::before { content:'"'; font-size:3.6rem; color:#1a73e8; line-height:0; vertical-align:-0.4em; margin-right:0.12em; }
+  .quote::after { content:'"'; font-size:3.6rem; color:#1a73e8; line-height:0; vertical-align:-0.4em; margin-left:0.12em; }
+  .author { font-size:1.3rem; color:#5f6368; font-style:normal; letter-spacing:0.05em; }
+  .author::before { content:'— '; }
+  .theme-chips { margin-top:1.5rem; display:flex; justify-content:center; gap:0.5rem; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; }
+  .theme-chip { display:inline-flex; align-items:center; padding:0.4rem 0.75rem; border-radius:999px; background:rgba(26,115,232,0.08); border:1px solid rgba(26,115,232,0.18); color:#1a73e8; font-size:0.85rem; }
+  .quote-actions { margin-top:1.75rem; display:flex; justify-content:center; gap:0.6rem; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; }
+  .action-btn { background:rgba(0,0,0,0.04); border:1px solid rgba(0,0,0,0.07); color:#5f6368; padding:0.6rem 1rem; border-radius:999px; font-size:0.85rem; display:inline-flex; align-items:center; gap:0.4rem; }
+  .action-btn svg { width:15px; height:15px; opacity:0.8; }
+  .branding { position:fixed; bottom:2rem; left:2.2rem; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; font-size:0.9rem; color:#bdc1c6; letter-spacing:0.02em; display:flex; align-items:center; gap:0.5rem; }
+  .branding img { width:22px; height:22px; border-radius:6px; }
+  .built-in { position:fixed; bottom:2rem; right:2.2rem; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; font-size:0.85rem; color:#bdc1c6; opacity:0.8; }
+  .refresh-btn { position:fixed; bottom:2rem; left:50%; transform:translateX(-50%); color:#c4c7cc; background:none; border:none; padding:0.5rem; }
+  .refresh-btn svg { width:20px; height:20px; }
+</style>
+</head>
+<body>
+  <div class="container">
+    <p class="quote">We are what we repeatedly do. Excellence, then, is not an act, but a habit.</p>
+    <p class="author">Aristotle</p>
+    <div class="theme-chips">
+      <span class="theme-chip">discipline</span>
+      <span class="theme-chip">growth</span>
+      <span class="theme-chip">habits</span>
+    </div>
+    <div class="quote-actions">
+      <button class="action-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg><span>Copy</span></button>
+      <button class="action-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17.27L18.18 21 16.54 13.97 22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path></svg><span>Save</span></button>
+    </div>
+  </div>
+  <div class="branding"><img src="../extension/icons/icon32.png"> musing</div>
+  <span class="built-in">🇯🇵 Built in Japan</span>
+  <button class="refresh-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M21 21v-5h-5"/></svg></button>
+</body>
+</html>
