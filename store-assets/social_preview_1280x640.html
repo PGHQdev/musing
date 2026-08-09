@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1280px; height: 640px; overflow: hidden; }
+  :root {
+    --accent: #4a9eff;
+    --bg: #202124;
+    --bg-card: #292a2d;
+    --line: #35363a;
+    --text: #e8eaed;
+    --muted: #9aa0a6;
+    --faint: #5f6368;
+  }
+  body {
+    position: relative;
+    width: 1280px; height: 640px;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    display: flex;
+    align-items: center;
+    padding: 0 84px;
+    gap: 64px;
+  }
+  /* Accent glow, echoing the landing hero */
+  body::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 70% 60% at 78% 12%, rgba(74, 158, 255, 0.20) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  /* Left: message */
+  .left { position: relative; width: 560px; flex: none; }
+  .wordmark {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 40px;
+  }
+  .wordmark img { width: 40px; height: 40px; border-radius: 10px; }
+  .wordmark span {
+    font-family: 'Nunito', sans-serif; font-weight: 800;
+    font-size: 30px; letter-spacing: -0.01em; color: #fff;
+  }
+  h1 {
+    font-family: 'Nunito', sans-serif; font-weight: 800;
+    font-size: 54px; line-height: 1.1; letter-spacing: -0.02em;
+    color: #fff; margin-bottom: 22px;
+  }
+  h1 .hl { color: var(--accent); }
+  .sub {
+    font-size: 22px; line-height: 1.5; color: var(--muted);
+    max-width: 500px; margin-bottom: 34px;
+  }
+  .meta { display: flex; align-items: center; gap: 14px; }
+  .pill {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 9px 16px; border-radius: 999px;
+    background: rgba(74, 158, 255, 0.12);
+    border: 1px solid rgba(74, 158, 255, 0.28);
+    color: var(--accent); font-size: 16px; font-weight: 600;
+  }
+  .url { color: var(--faint); font-size: 17px; letter-spacing: 0.01em; }
+
+  /* Right: product vignette (the real new-tab quote) */
+  .card {
+    position: relative;
+    width: 508px; flex: none;
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 22px;
+    box-shadow: 0 40px 80px -30px rgba(0, 0, 0, 0.6);
+    padding: 56px 48px 40px;
+    text-align: center;
+  }
+  .card .dots {
+    position: absolute; top: 20px; left: 22px;
+    display: flex; gap: 8px;
+  }
+  .card .dots i { width: 11px; height: 11px; border-radius: 50%; display: block; }
+  .card .dots .r { background: #ff5f56; }
+  .card .dots .y { background: #ffbd2e; }
+  .card .dots .g { background: #27c93f; }
+  .quote {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 27px; line-height: 1.55; font-style: italic;
+    color: var(--text); margin: 14px 0 20px;
+  }
+  .quote::before, .quote::after { color: var(--accent); font-size: 34px; line-height: 0; vertical-align: -0.35em; }
+  .quote::before { content: '“'; margin-right: 0.06em; }
+  .quote::after { content: '”'; margin-left: 0.06em; }
+  .author { font-size: 17px; color: var(--muted); letter-spacing: 0.04em; }
+  .author::before { content: '— '; }
+  .reason { margin-top: 18px; font-size: 14px; font-style: italic; color: var(--faint); }
+  .chips { margin-top: 22px; display: flex; justify-content: center; gap: 8px; }
+  .chip {
+    padding: 7px 13px; border-radius: 999px; font-size: 13.5px;
+    background: rgba(74, 158, 255, 0.10);
+    border: 1px solid rgba(74, 158, 255, 0.22);
+    color: var(--accent);
+  }
+</style>
+</head>
+<body>
+  <div class="left">
+    <div class="wordmark">
+      <img src="../extension/icons/icon128.png" alt="">
+      <span>musing</span>
+    </div>
+    <h1>New-tab quotes, tuned to <span class="hl">what you're thinking about</span></h1>
+    <p class="sub">Matched to the themes of your AI conversations — extracted locally, in your browser.</p>
+    <div class="meta">
+      <span class="pill">🔒 Private by default</span>
+      <span class="url">musing.wiki</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="dots"><i class="r"></i><i class="y"></i><i class="g"></i></div>
+    <p class="quote">We are what we repeatedly do. Excellence, then, is not an act, but a habit.</p>
+    <p class="author">Aristotle</p>
+    <p class="reason">you've been thinking about discipline</p>
+    <div class="chips">
+      <span class="chip">discipline</span>
+      <span class="chip">growth</span>
+      <span class="chip">habits</span>
+    </div>
+  </div>
+</body>
+</html>
