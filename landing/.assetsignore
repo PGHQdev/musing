@@ -1,2 +1,4 @@
 worker.js
 wrangler.jsonc
+.wrangler
+*.map
