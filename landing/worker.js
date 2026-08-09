@@ -5,8 +5,8 @@ const SECURITY_HEADERS = {
   'Content-Security-Policy':
     "default-src 'self'; " +
     "script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com https://cloud.umami.is; " +
-    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
-    "font-src https://fonts.gstatic.com; " +
+    "style-src 'self' 'unsafe-inline'; " +
+    "font-src 'self'; " +
     "img-src 'self' data:; " +
     "connect-src 'self' https://cloudflareinsights.com https://gateway.umami.is; " +
     "object-src 'none'; base-uri 'self'; frame-ancestors 'none'",
@@ -110,6 +110,30 @@ export default {
           500
         );
       }
+    }
+
+    // Clean, valid robots.txt served from the Worker so it is not shaped by an
+    // edge-injected directive Lighthouse flags as unknown.
+    if (url.pathname === '/robots.txt') {
+      return withSecurityHeaders(
+        new Response('User-agent: *\nAllow: /\nSitemap: https://musing.wiki/sitemap.xml\n', {
+          headers: { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'public, max-age=86400' },
+        })
+      );
+    }
+
+    if (url.pathname === '/sitemap.xml') {
+      const pages = ['/', '/privacy.html', '/terms.html'];
+      const body =
+        '<?xml version="1.0" encoding="UTF-8"?>\n' +
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
+        pages.map((p) => `  <url><loc>https://musing.wiki${p}</loc></url>`).join('\n') +
+        '\n</urlset>\n';
+      return withSecurityHeaders(
+        new Response(body, {
+          headers: { 'Content-Type': 'application/xml; charset=utf-8', 'Cache-Control': 'public, max-age=86400' },
+        })
+      );
     }
 
     // Umami analytics load directly from cloud.umami.is (script) and report to

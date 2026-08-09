@@ -25,9 +25,16 @@
   <link rel="icon" type="image/png" sizes="32x32" href="icons/icon32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="icons/icon16.png">
   <link rel="apple-touch-icon" href="icons/icon128.png">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@800&display=swap" rel="stylesheet">
+  <link rel="preload" href="fonts/nunito-800-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <style>
+    @font-face {
+      font-family: 'Nunito';
+      font-style: normal;
+      font-weight: 800;
+      font-display: swap;
+      src: url('fonts/nunito-800-latin.woff2') format('woff2');
+    }
+  </style>
   <script defer src="https://cloud.umami.is/script.js" data-website-id="891cdfa8-1db7-4ef6-81a2-0bf8cba4ddd9"></script>
   <script>
     // Hide A/B-tested elements until ab-test.js assigns a variant;
@@ -517,7 +524,7 @@
   <section class="hero">
     <div class="hero-content">
       <div class="logo">
-        <img src="icons/icon128.png" alt="Musing Logo">
+        <img src="icons/logo-384.webp" alt="Musing Logo" width="128" height="128">
       </div>
       <h1 class="tagline">let the wisdom of the past guide your present</h1>
       <p class="subtitle"><span class="brand-text">musing</span> transforms your new tab into a personalized sanctuary of timeless quotes — local by default, with optional BYOK intelligence.</p>
@@ -677,7 +684,7 @@
   <footer>
     <div class="footer-content">
       <div class="logo">
-        <img src="icons/icon48.png" alt="Musing Logo" style="width: 48px; height: 48px;">
+        <img src="icons/logo-384.webp" alt="Musing Logo" width="48" height="48" style="width: 48px; height: 48px;">
         <span class="brand-text small">musing</span>
       </div>
       <div class="footer-links">
