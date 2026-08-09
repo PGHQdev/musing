@@ -1,4 +1,5 @@
 worker.js
 wrangler.jsonc
+package.json
 .wrangler
 *.map

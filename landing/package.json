@@ -1,0 +1,9 @@
+{
+  "name": "musing-landing",
+  "private": true,
+  "description": "Musing marketing landing page + Cloudflare Worker. Static assets, no build step.",
+  "scripts": {
+    "build": "echo \"No build step — static assets are deployed as-is.\"",
+    "deploy": "wrangler deploy"
+  }
+}
