@@ -4,6 +4,14 @@ All notable changes to Musing are documented here. The format is based on
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project
 follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.3] - 2026-08-10
+
+### Added
+
+- A subtle, dismissible prompt on the new tab that invites rating on the
+  Chrome Web Store. It appears only after sustained use, goes quiet after a
+  dismissal, and never shows again once the user rates.
+
 ## [1.2.2] - 2026-08-10
 
 ### Fixed

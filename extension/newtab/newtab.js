@@ -47,6 +47,13 @@
   // Version changelog - keyed by version number
   // Add entries when releasing new versions
   const VERSION_CHANGELOG = {
+    "1.2.3": {
+      icon: "⭐",
+      title: "What's New in v1.2.3",
+      items: [
+        { icon: "✨", text: "Small quality-of-life polish" },
+      ],
+    },
     "1.2.2": {
       icon: "🛡️",
       title: "What's New in v1.2.2",
@@ -99,6 +106,9 @@
   const copyQuoteEl = document.getElementById("copy-quote");
   const favoriteQuoteEl = document.getElementById("favorite-quote");
   const favoriteQuoteLabelEl = document.getElementById("favorite-quote-label");
+  const ratingPromptEl = document.getElementById("rating-prompt");
+  const ratingRateEl = document.getElementById("rating-rate");
+  const ratingDismissEl = document.getElementById("rating-dismiss");
   const themeChipsEl = document.getElementById("theme-chips");
 
   // Notification elements
@@ -131,6 +141,11 @@
   // billed reason is shown instead of discarded; only applied when AI is on.
   const GET_QUOTE_AI_TIMEOUT_MS = 12000;
   const GET_QUOTE_TIMED_OUT = Symbol("get-quote-timeout");
+
+  // Rating nudge: never on day one, re-ask far later after a dismiss, then stop.
+  const RATING_MIN_OPENS = 15;
+  const RATING_RESNOOZE_OPENS = 40;
+  const RATING_MAX_DISMISSALS = 2;
 
   /**
    * Show loading state
@@ -539,6 +554,41 @@
     // rejection here must not surface as an unhandled promise.
     checkOnboarding().catch((error) => console.warn("[Musing] Onboarding check failed:", error));
     checkNotifications();
+    maybeShowRatingPrompt().catch(() => {});
+  }
+
+  // ============ Rating prompt ============
+
+  /**
+   * Count this new-tab open and, once the user has gotten enough value, show a
+   * subtle nudge to rate on the Chrome Web Store. Never on day one; goes quiet
+   * for a long stretch after each dismissal, and stops after a few dismissals
+   * or once the user rates.
+   */
+  async function maybeShowRatingPrompt() {
+    if (!ratingPromptEl) return;
+    const state = await Store.rating.recordOpen();
+    if (!state || state.rated) return;
+    if (state.dismissals >= RATING_MAX_DISMISSALS) return;
+    if (state.opens < RATING_MIN_OPENS) return;
+    if (state.snoozeUntil && state.opens < state.snoozeUntil) return;
+    ratingPromptEl.classList.add("show");
+  }
+
+  function handleRatingRate() {
+    // Fire-and-forget; opening the store link must not wait on storage.
+    Store.rating.markRated().catch(() => {});
+    if (ratingPromptEl) ratingPromptEl.classList.remove("show");
+  }
+
+  async function handleRatingDismiss() {
+    if (ratingPromptEl) ratingPromptEl.classList.remove("show");
+    try {
+      const state = await Store.rating.getState();
+      await Store.rating.snoozeUntil((state.opens || 0) + RATING_RESNOOZE_OPENS);
+    } catch {
+      // A failed snooze just means we may ask again next open; harmless.
+    }
   }
 
   // Event listeners
@@ -546,6 +596,8 @@
   document.addEventListener("visibilitychange", handleVisibilityChange);
   if (copyQuoteEl) copyQuoteEl.addEventListener("click", copyCurrentQuote);
   if (favoriteQuoteEl) favoriteQuoteEl.addEventListener("click", toggleFavorite);
+  if (ratingRateEl) ratingRateEl.addEventListener("click", handleRatingRate);
+  if (ratingDismissEl) ratingDismissEl.addEventListener("click", handleRatingDismiss);
 
   // ============ Notifications ============
 

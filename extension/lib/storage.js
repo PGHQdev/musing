@@ -47,6 +47,7 @@ const Store = (() => {
     SCRAPE_TABS: "background_scrape_tabs",
     LAST_SYNC: "last_sync_timestamp",
     ONBOARDING: "onboarding_complete",
+    RATING: "rating_prompt_state",
   };
 
   const SETTINGS_DEFAULTS = {
@@ -473,6 +474,42 @@ const Store = (() => {
     },
   };
 
+  // Subtle "rate this extension" nudge. State: how many new tabs were opened,
+  // whether the user rated (never ask again), how many times they dismissed,
+  // and the open count before which we stay quiet after a dismiss.
+  const RATING_DEFAULT = { opens: 0, rated: false, dismissals: 0, snoozeUntil: 0 };
+  const rating = {
+    getState() {
+      return read(K.RATING, RATING_DEFAULT);
+    },
+    /** Count one new-tab open and return the updated state. Stops counting once rated. */
+    recordOpen() {
+      return serialize(async () => {
+        const s = { ...RATING_DEFAULT, ...(await read(K.RATING, RATING_DEFAULT)) };
+        if (s.rated) return s;
+        s.opens += 1;
+        await write({ [K.RATING]: s });
+        return s;
+      });
+    },
+    markRated() {
+      return serialize(async () => {
+        const s = { ...RATING_DEFAULT, ...(await read(K.RATING, RATING_DEFAULT)) };
+        s.rated = true;
+        await write({ [K.RATING]: s });
+      });
+    },
+    /** Record a dismissal and stay quiet until the given open count. */
+    snoozeUntil(openCount) {
+      return serialize(async () => {
+        const s = { ...RATING_DEFAULT, ...(await read(K.RATING, RATING_DEFAULT)) };
+        s.dismissals += 1;
+        s.snoozeUntil = openCount;
+        await write({ [K.RATING]: s });
+      });
+    },
+  };
+
   /** Wipe everything captured from the user's browsing (popup "clear data"). */
   function clearCapturedData() {
     // Serialized so a concurrent conversations.add / appendLog cannot write the
@@ -499,6 +536,7 @@ const Store = (() => {
     scrape,
     sync,
     onboarding,
+    rating,
     clearCapturedData,
     dumpAll,
   };

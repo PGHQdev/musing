@@ -106,6 +106,50 @@
       opacity: 1;
     }
 
+    .rating-prompt {
+      margin-top: 1.25rem;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 0.75rem;
+      color: light-dark(#9aa0a6, #5f6368);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .rating-prompt.show {
+      display: inline-flex;
+      opacity: 1;
+    }
+
+    .rating-prompt a {
+      color: light-dark(#1a73e8, #8ab4f8);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .rating-prompt a:hover {
+      text-decoration: underline;
+    }
+
+    .rating-prompt-dismiss {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: inherit;
+      opacity: 0.6;
+      font-size: 0.9rem;
+      line-height: 1;
+      padding: 0 0.15rem;
+    }
+
+    .rating-prompt-dismiss:hover,
+    .rating-prompt-dismiss:focus-visible {
+      opacity: 1;
+    }
+
     .quote-actions {
       margin-top: 1.25rem;
       display: flex;
@@ -743,6 +787,11 @@
           </svg>
           <span id="favorite-quote-label">Save</span>
         </button>
+      </div>
+      <div class="rating-prompt" id="rating-prompt">
+        <span>Enjoying Musing?</span>
+        <a id="rating-rate" href="https://chromewebstore.google.com/detail/hkfpdamehcnbhfeilamlbeabgdlgnjfk/reviews" target="_blank" rel="noopener">★ Rate it</a>
+        <button class="rating-prompt-dismiss" id="rating-dismiss" type="button" aria-label="Dismiss">×</button>
       </div>
     </div>
   </div>
