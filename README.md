@@ -18,10 +18,7 @@ Musing turns every new tab into a piece of historical wisdom, chosen from the th
 
 <br>
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="store-assets/final/shot2_hero_dark.png">
-  <img src="store-assets/final/shot1_hero_light.png" alt="Musing new tab" width="720">
-</picture>
+<img src="store-assets/social_preview_1280x640.png" alt="Musing — new-tab quotes matched to your AI conversations, extracted locally" width="820">
 
 </div>
 
