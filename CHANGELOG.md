@@ -4,6 +4,13 @@ All notable changes to Musing are documented here. The format is based on
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project
 follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.4] - 2026-08-10
+
+### Fixed
+
+- The popup no longer opens as an oversized 800×600 window with empty dark
+  space; the root element now declares the 350px width Chrome sizes from.
+
 ## [1.2.3] - 2026-08-10
 
 ### Added

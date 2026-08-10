@@ -47,6 +47,13 @@
   // Version changelog - keyed by version number
   // Add entries when releasing new versions
   const VERSION_CHANGELOG = {
+    "1.2.4": {
+      icon: "🔧",
+      title: "What's New in v1.2.4",
+      items: [
+        { icon: "🪟", text: "Fixed the settings popup sometimes opening oversized" },
+      ],
+    },
     "1.2.3": {
       icon: "⭐",
       title: "What's New in v1.2.3",
