@@ -228,6 +228,12 @@ chrome.runtime.onInstalled.addListener(async (details) => {
       const previousVersion = details.previousVersion;
       console.log("[Musing] Extension updated from", previousVersion, "to", currentVersion);
 
+      // The cache holds quotes from the bank that shipped with the previous
+      // version, including ids this version retired. Drop it so the next draw
+      // rebuilds from the bundled bank. Favorites, shown history, blocked
+      // themes and settings are untouched.
+      await Store.quotes.clearCache();
+
       const notificationSettings = await Store.notifications.getSettings();
 
       if (notificationSettings.showUpdateNotifications && previousVersion !== currentVersion) {

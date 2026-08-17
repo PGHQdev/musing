@@ -279,6 +279,12 @@ const Store = (() => {
     setThemeKey(key) {
       return write({ [K.QUOTES_THEME_KEY]: key });
     },
+    // A new version ships a new bank, and the cache can hold quotes it retired.
+    // Both keys go out in one write: an empty cache under a surviving theme key
+    // would let the next refresh take the merge branch and keep the old pool.
+    clearCache() {
+      return write({ [K.QUOTES]: [], [K.QUOTES_THEME_KEY]: "" });
+    },
   };
 
   const favorites = {
