@@ -240,14 +240,20 @@ const Store = (() => {
     // Turning browser history off drops the themes it produced. Without this,
     // themes from a past browsing window keep feeding the quote cache key and
     // the ranking for as long as the profile lives.
+    //
+    // Both keys go out in one write, as in history.recordShown: a worker
+    // teardown between two writes would persist the disabled setting while the
+    // stale themes survive, and the transition test reads an already-disabled
+    // previous value from then on, so no later write would retry the clear.
     set(value) {
       return serialize(async () => {
         const previous = await read(K.HISTORY_SETTINGS, {});
         const wasEnabled = { ...HISTORY_SETTINGS_DEFAULTS, ...previous }.enableBrowserHistory;
-        await write({ [K.HISTORY_SETTINGS]: value });
+        const entries = { [K.HISTORY_SETTINGS]: value };
         if (wasEnabled && !value?.enableBrowserHistory) {
-          await themes.clearHistoryThemes();
+          entries[K.HISTORY_THEMES] = {};
         }
+        await write(entries);
       });
     },
   };
