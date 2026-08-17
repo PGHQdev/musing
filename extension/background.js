@@ -17,7 +17,7 @@ importScripts(
 const MIN_CACHE_SIZE = 5;
 // Quotes ranked into the pool for one topic. Ranking is deterministic, so for a
 // stable topic this number is the whole reachable set: at 15 a philosophy topic
-// reached 15 of the 26 quotes tagged philosophy and never the rest. 30 is what
+// reached 15 of the 25 quotes tagged philosophy and never the rest. 30 is what
 // Store.quotes.setCache keeps (MAX_CACHED_QUOTES) and covers the largest theme
 // in the bank, so every quote a single-theme topic can earn is reachable.
 const DEFAULT_CACHE_SIZE = 30;
@@ -232,7 +232,16 @@ chrome.runtime.onInstalled.addListener(async (details) => {
       // version, including ids this version retired. Drop it so the next draw
       // rebuilds from the bundled bank. Favorites, shown history, blocked
       // themes and settings are untouched.
-      await Store.quotes.clearCache();
+      //
+      // Guarded on its own: onInstalled fires once per update, so a throw that
+      // reached the outer catch would skip the version markers below with no
+      // retry, losing the update notification and leaving lastSeenVersion on
+      // the old value. A stale cache is the smaller failure of the two.
+      try {
+        await Store.quotes.clearCache();
+      } catch (error) {
+        console.error("[Musing] Quote cache invalidation failed:", error);
+      }
 
       const notificationSettings = await Store.notifications.getSettings();
 
