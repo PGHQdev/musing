@@ -15,7 +15,12 @@ importScripts(
 );
 
 const MIN_CACHE_SIZE = 5;
-const DEFAULT_CACHE_SIZE = 15;
+// Quotes ranked into the pool for one topic. Ranking is deterministic, so for a
+// stable topic this number is the whole reachable set: at 15 a philosophy topic
+// reached 15 of the 26 quotes tagged philosophy and never the rest. 30 is what
+// Store.quotes.setCache keeps (MAX_CACHED_QUOTES) and covers the largest theme
+// in the bank, so every quote a single-theme topic can earn is reachable.
+const DEFAULT_CACHE_SIZE = 30;
 const MIN_PROCESS_INTERVAL_MS = 5 * 60 * 1000; // 5 minutes between processing
 
 // What the user is talking about now counts double what they browsed
