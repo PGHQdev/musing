@@ -114,13 +114,28 @@
   }
 
   /**
+   * Two words share a root when their common prefix is at least 4 characters
+   * and at least 70% of the shorter word's length ("solve"/"solving" at 4 of
+   * 5, "explore"/"exploring" at 6 of 7). Catches inflection that changes
+   * spelling before the suffix (dropped silent "e", diverging stem), which
+   * plain substring containment misses. Compared as integers (i*10 >= 7*len)
+   * to avoid float rounding at the boundary.
+   */
+  function sharesRoot(a, b) {
+    let i = 0;
+    const max = Math.min(a.length, b.length);
+    while (i < max && a[i] === b[i]) i++;
+    return i >= 4 && i * 10 >= 7 * max;
+  }
+
+  /**
    * Drop any term that already appears in the phrase, so the reason line
    * carries evidence instead of repeating the theme label. A term is dropped
    * when the phrase contains it outright ("complex" inside "tackling
-   * something complex"), or when the term contains a phrase word of 4+
-   * characters ("algorithmic" contains "algorithm"). Short phrase words
-   * ("on", "the") are excluded from the second check so they can't zero out
-   * an unrelated term.
+   * something complex", cheap and catches multi-word phrases), or when it
+   * shares a root with a phrase word of 4+ characters ("algorithmic" and
+   * "algorithms", "inspire" and "inspiration"). Short phrase words ("on",
+   * "the") are excluded so they can't zero out an unrelated term.
    */
   function filterRedundantTerms(phrase, terms) {
     const lowerPhrase = String(phrase).toLowerCase();
@@ -128,7 +143,7 @@
     return terms.filter((term) => {
       const lowerTerm = String(term).toLowerCase();
       if (lowerPhrase.includes(lowerTerm)) return false;
-      return !phraseWords.some((w) => lowerTerm.includes(w));
+      return !phraseWords.some((w) => lowerTerm.includes(w) || sharesRoot(w, lowerTerm));
     });
   }
 
