@@ -2,174 +2,204 @@
  * Local Theme Extraction Module
  * Extracts themes from conversation text using keyword matching
  * Fully local - no network requests
+ *
+ * Each theme carries two keyword tiers:
+ *   strong - the word alone is decisive for the theme ("microservice", "burnout")
+ *   weak   - common English, or a term several themes share ("work", "system")
+ * A keyword can be strong for one theme and weak for another.
  */
 
 const THEME_KEYWORDS = {
   // Technical
-  programming: [
-    "code", "coding", "program", "software", "developer", "function", "variable",
-    "algorithm", "api", "database", "frontend", "backend", "javascript", "python",
-    "typescript", "react", "node", "git", "deploy", "server", "client", "html", "css"
-  ],
-  debugging: [
-    "debug", "bug", "error", "fix", "issue", "problem", "broken", "crash", "exception",
-    "stack trace", "console", "log", "breakpoint", "test", "failing"
-  ],
-  architecture: [
-    "architecture", "design pattern", "system", "infrastructure", "scalable", "microservice",
-    "monolith", "api design", "database design", "schema", "structure"
-  ],
-  algorithms: [
-    "algorithm", "data structure", "complexity", "big o", "sort", "search", "tree",
-    "graph", "hash", "recursion", "dynamic programming", "optimization"
-  ],
+  programming: {
+    strong: [
+      "coding", "software", "developer", "api", "frontend", "backend",
+      "javascript", "python", "typescript", "react", "git", "html", "css"
+    ],
+    weak: [
+      "code", "program", "function", "variable", "algorithm", "database",
+      "node", "deploy", "server", "client"
+    ]
+  },
+  debugging: {
+    strong: ["debug", "bug", "crash", "exception", "stack trace", "breakpoint", "console"],
+    weak: ["error", "fix", "issue", "problem", "broken", "log", "test", "failing"]
+  },
+  architecture: {
+    strong: [
+      "architecture", "design pattern", "infrastructure", "scalable", "microservice",
+      "monolith", "api design", "database design", "schema"
+    ],
+    weak: ["system", "structure"]
+  },
+  algorithms: {
+    // "big o" is weak because the widened pattern also matches "big one"
+    strong: ["algorithm", "data structure", "hash", "recursion", "dynamic programming"],
+    weak: ["complexity", "sort", "search", "tree", "graph", "optimization", "big o"]
+  },
 
   // Learning & Growth
-  learning: [
-    "learn", "learning", "study", "understand", "knowledge", "education", "course",
-    "tutorial", "practice", "improve", "skill", "beginner", "advanced", "teach"
-  ],
-  growth: [
-    "grow", "growth", "improve", "better", "progress", "develop", "evolve", "change",
-    "transform", "journey", "path", "milestone"
-  ],
+  learning: {
+    strong: ["learn", "learning", "study", "education", "tutorial", "beginner", "teach"],
+    weak: ["understand", "knowledge", "course", "practice", "improve", "skill", "advanced"]
+  },
+  growth: {
+    strong: ["grow", "growth", "evolve"],
+    weak: [
+      "improve", "better", "progress", "develop", "change", "transform",
+      "journey", "path", "milestone"
+    ]
+  },
 
   // Emotional
-  frustration: [
-    "frustrat", "annoy", "stuck", "confused", "difficult", "hard", "struggle",
-    "can't", "won't work", "doesn't work", "hate", "ugh", "argh"
-  ],
-  curiosity: [
-    "curious", "wonder", "interesting", "fascinate", "explore", "discover", "why",
-    "how does", "what if", "learn more"
-  ],
-  excitement: [
-    "excit", "amazing", "awesome", "cool", "love", "great", "fantastic", "finally",
-    "worked", "success", "yes", "perfect"
-  ],
-  anxiety: [
-    "worr", "anxious", "stress", "nervous", "afraid", "fear", "deadline", "pressure",
-    "overwhelm", "panic", "uncertain"
-  ],
+  frustration: {
+    strong: ["frustrat", "annoy", "stuck", "confused", "hate", "ugh", "argh"],
+    weak: ["difficult", "hard", "struggle", "can't", "won't work", "doesn't work"]
+  },
+  curiosity: {
+    strong: ["curious", "fascinate", "how does", "what if", "learn more"],
+    weak: ["wonder", "interesting", "explore", "discover", "why"]
+  },
+  excitement: {
+    strong: ["excit", "amazing", "awesome", "fantastic", "finally"],
+    weak: ["cool", "love", "great", "worked", "success", "yes", "perfect"]
+  },
+  anxiety: {
+    strong: ["worr", "anxious", "stress", "nervous", "panic", "overwhelm"],
+    weak: ["afraid", "fear", "deadline", "pressure", "uncertain"]
+  },
 
   // Life
-  career: [
-    "career", "job", "work", "profession", "interview", "resume", "salary", "promotion",
-    "manager", "team", "company", "startup", "business", "entrepreneur"
-  ],
-  relationships: [
-    "relationship", "friend", "family", "partner", "colleague", "team", "collaborate",
-    "communicate", "trust", "support"
-  ],
-  health: [
-    "health", "sleep", "exercise", "mental", "wellness", "tired", "energy", "burnout",
-    "balance", "rest", "meditat"
-  ],
-  finance: [
-    "money", "finance", "budget", "invest", "save", "cost", "price", "expensive",
-    "afford", "income", "salary"
-  ],
+  career: {
+    strong: [
+      "career", "profession", "interview", "resume", "salary", "promotion",
+      "startup", "entrepreneur"
+    ],
+    weak: ["job", "work", "manager", "team", "company", "business"]
+  },
+  relationships: {
+    strong: ["relationship", "friend", "family", "partner", "colleague"],
+    weak: ["team", "collaborate", "communicate", "trust", "support"]
+  },
+  health: {
+    strong: ["health", "sleep", "exercise", "wellness", "tired", "burnout", "meditat"],
+    weak: ["mental", "energy", "balance", "rest"]
+  },
+  finance: {
+    strong: ["money", "finance", "budget", "price", "expensive", "afford", "income", "salary"],
+    weak: ["invest", "save", "cost"]
+  },
 
   // Abstract
-  persistence: [
-    "persist", "persever", "keep going", "don't give up", "continue", "endure",
-    "resilient", "determined", "committed", "dedication"
-  ],
-  patience: [
-    "patient", "patience", "wait", "time", "slow", "gradual", "eventually", "calm",
-    "steady", "pace"
-  ],
-  simplicity: [
-    "simple", "simplify", "minimal", "clean", "clear", "elegant", "straightforward",
-    "basic", "essential", "reduce"
-  ],
-  complexity: [
-    "complex", "complicated", "intricate", "nuance", "subtle", "layered", "deep",
-    "sophisticated"
-  ],
-  wisdom: [
-    "wisdom", "wise", "insight", "perspective", "understand", "realize", "lesson",
-    "experience", "knowledge", "truth"
-  ],
+  persistence: {
+    strong: ["persist", "persever", "keep going", "don't give up", "endure", "resilient", "dedication"],
+    weak: ["continue", "determined", "committed"]
+  },
+  patience: {
+    strong: ["patient", "patience", "gradual", "calm", "steady"],
+    weak: ["wait", "time", "slow", "eventually", "pace"]
+  },
+  simplicity: {
+    strong: ["simple", "simplify", "minimal", "elegant", "straightforward"],
+    weak: ["clean", "clear", "basic", "essential", "reduce"]
+  },
+  complexity: {
+    strong: ["complex", "complicated", "intricate", "nuance", "sophisticated"],
+    weak: ["subtle", "layered", "deep"]
+  },
+  wisdom: {
+    strong: ["wisdom", "wise"],
+    weak: [
+      "insight", "perspective", "understand", "realize", "lesson",
+      "experience", "knowledge", "truth"
+    ]
+  },
 
   // Work & Productivity
-  productivity: [
-    "productive", "productivity", "efficient", "focus", "distract", "procrastinat",
-    "todo", "task", "organize", "priorit", "time management"
-  ],
-  motivation: [
-    "motivat", "inspire", "drive", "passion", "purpose", "goal", "ambition", "dream",
-    "aspir", "determination"
-  ],
+  productivity: {
+    strong: ["productive", "productivity", "distract", "procrastinat", "todo", "priorit", "time management"],
+    weak: ["efficient", "focus", "task", "organize"]
+  },
+  motivation: {
+    // "aspir" is weak because the widened pattern also matches "aspirin", "aspirate"
+    strong: ["motivat", "inspire", "passion", "ambition", "determination"],
+    weak: ["drive", "purpose", "goal", "dream", "aspir"]
+  },
 
   // Writing & Creativity
-  writing: [
-    "writ", "essay", "article", "blog", "document", "draft", "edit", "publish",
-    "content", "copy", "story", "narrative"
-  ],
-  creativity: [
-    "creativ", "idea", "brainstorm", "innovate", "imagine", "design", "art", "create",
-    "original", "unique", "inventive"
-  ],
+  writing: {
+    strong: ["writ", "essay", "article", "blog", "draft", "narrative"],
+    weak: ["document", "edit", "publish", "content", "copy", "story"]
+  },
+  creativity: {
+    strong: ["creativ", "brainstorm", "innovate", "imagine", "inventive"],
+    weak: ["idea", "design", "art", "create", "original", "unique"]
+  },
 
   // Decision Making
-  "decision-making": [
-    "decide", "decision", "choice", "choose", "option", "alternative", "tradeoff",
-    "pros and cons", "evaluate", "assess", "weigh"
-  ],
-  uncertainty: [
-    "uncertain", "unsure", "doubt", "maybe", "perhaps", "risk", "unknown", "unclear",
-    "ambiguous", "unpredictable"
-  ],
+  "decision-making": {
+    strong: ["decide", "decision", "choice", "choose", "tradeoff", "pros and cons"],
+    weak: ["option", "alternative", "evaluate", "assess", "weigh"]
+  },
+  uncertainty: {
+    strong: ["uncertain", "unsure", "doubt", "unknown", "unclear", "ambiguous", "unpredictable"],
+    weak: ["maybe", "perhaps", "risk"]
+  },
 
   // Problem Solving
-  "problem-solving": [
-    "solve", "solution", "problem", "challenge", "approach", "strategy", "method",
-    "tackle", "address", "resolve", "figure out"
-  ],
+  "problem-solving": {
+    strong: ["solve", "solution", "tackle", "figure out"],
+    weak: ["problem", "challenge", "approach", "strategy", "method", "address", "resolve"]
+  },
 
   // Success & Failure
-  success: [
-    "success", "succeed", "achieve", "accomplish", "win", "goal", "milestone",
-    "breakthrough", "victory"
-  ],
-  failure: [
-    "fail", "failure", "mistake", "wrong", "error", "setback", "loss", "defeat",
-    "disappoint"
-  ],
+  success: {
+    // "success" is weak because the widened pattern also matches "successive", "succession"
+    strong: ["succeed", "achieve", "accomplish", "breakthrough", "victory"],
+    weak: ["win", "goal", "milestone", "success"]
+  },
+  failure: {
+    strong: ["fail", "failure", "mistake", "setback", "defeat", "disappoint"],
+    weak: ["wrong", "error", "loss"]
+  },
 
   // Time
-  time: [
-    "time", "hour", "minute", "day", "week", "month", "year", "deadline", "schedule",
-    "late", "early", "soon", "eventually"
-  ],
+  time: {
+    strong: ["deadline", "schedule"],
+    weak: [
+      "time", "hour", "minute", "day", "week", "month", "year",
+      "late", "early", "soon", "eventually"
+    ]
+  },
 
   // Communication
-  communication: [
-    "communicat", "explain", "clarify", "discuss", "talk", "conversation", "feedback",
-    "listen", "understand", "express"
-  ],
+  communication: {
+    strong: ["communicat", "clarify", "conversation", "feedback", "listen"],
+    weak: ["explain", "discuss", "talk", "understand", "express"]
+  },
 
   // Change
-  change: [
-    "change", "adapt", "adjust", "transition", "transform", "shift", "evolve",
-    "different", "new", "update"
-  ],
+  change: {
+    strong: ["adapt", "transition", "transform", "evolve"],
+    weak: ["change", "adjust", "shift", "different", "new", "update"]
+  },
 
   // Philosophy
-  philosophy: [
-    "meaning", "purpose", "exist", "life", "death", "consciousness", "reality",
-    "truth", "ethics", "moral", "value"
-  ],
+  philosophy: {
+    // "moral" is weak because the widened pattern also matches "morale"
+    strong: ["death", "consciousness", "ethics"],
+    weak: ["meaning", "purpose", "exist", "life", "reality", "truth", "value", "moral"]
+  },
 
   // Courage & Fear
-  courage: [
-    "courage", "brave", "bold", "confident", "fearless", "risk", "dare", "venture",
-    "stand up"
-  ],
-  fear: [
-    "fear", "afraid", "scared", "terrif", "dread", "phobia", "worry", "anxious"
-  ]
+  courage: {
+    strong: ["courage", "brave", "fearless", "dare", "stand up"],
+    weak: ["bold", "confident", "risk", "venture"]
+  },
+  fear: {
+    strong: ["fear", "afraid", "scared", "dread", "phobia"],
+    weak: ["terrif", "worry", "anxious"]
+  }
 };
 
 function escapeRegExp(str) {
@@ -180,22 +210,99 @@ function escapeRegExp(str) {
 // ("work" -> "workflow", "time" -> "timeline", "change" -> "changelog")
 const EXACT_MATCH_KEYWORDS = new Set(["work", "time", "change"]);
 
-// Precompiled once at module scope; String.prototype.match with the g flag
-// resets lastIndex, so sharing these regexes across calls is safe
-const THEME_PATTERNS = Object.entries(THEME_KEYWORDS).map(([theme, keywords]) => ({
-  theme,
-  keywordCount: keywords.length,
-  patterns: keywords.map((keyword) => {
-    const suffix = EXACT_MATCH_KEYWORDS.has(keyword) ? "\\b" : "";
-    return new RegExp(`\\b${escapeRegExp(keyword)}${suffix}`, "g");
-  }),
-}));
+// A theme survives only with one strong keyword or two distinct weak ones
+const MIN_DISTINCT_WEAK = 2;
+// A theme survives only within this fraction of the top score
+const RELATIVE_CUTOFF = 0.4;
+// Reason-line limits: how many terms per theme and how long each may be
+const MAX_TERMS = 3;
+const MAX_TERM_LENGTH = 24;
+// Terms carry letters, single spaces, and hyphens only
+const TERM_SHAPE = /^[a-z]+(?:[ -][a-z]+)*$/;
+
+// Precompiled once at module scope. Every read resets lastIndex before use, so
+// sharing these regexes across calls is safe.
+const THEME_PATTERNS = Object.entries(THEME_KEYWORDS).map(([theme, tiers]) => {
+  const build = (keyword, strong) => {
+    const exact = EXACT_MATCH_KEYWORDS.has(keyword);
+    return {
+      keyword,
+      strong,
+      exact,
+      regex: new RegExp(`\\b${escapeRegExp(keyword)}${exact ? "\\b" : "\\w*"}`, "g"),
+    };
+  };
+
+  return {
+    theme,
+    // Strong keywords count double on both sides of the ratio
+    denominator: 2 * tiers.strong.length + tiers.weak.length,
+    keywords: [
+      ...tiers.strong.map((keyword) => build(keyword, true)),
+      ...tiers.weak.map((keyword) => build(keyword, false)),
+    ],
+  };
+});
 
 /**
- * Extract themes from text using keyword matching
+ * Collect every match of one keyword pattern
+ * @param {RegExp} regex - Global pattern for a single keyword
+ * @param {string} text - Lowercased conversation text
+ * @returns {{count: number, first: string, firstIndex: number}|null}
+ */
+function matchKeyword(regex, text) {
+  regex.lastIndex = 0;
+  let count = 0;
+  let first = "";
+  let firstIndex = -1;
+  let match;
+
+  while ((match = regex.exec(text)) !== null) {
+    if (count === 0) {
+      first = match[0];
+      firstIndex = match.index;
+    }
+    count += 1;
+  }
+
+  return count > 0 ? { count, first, firstIndex } : null;
+}
+
+/**
+ * Pick the terms shown on the reason line
+ * @param {string} theme - Theme name, used to drop redundant terms
+ * @param {Array} hits - Matched keywords with tier, count, and first appearance
+ * @returns {string[]} Up to MAX_TERMS terms, strong tier first
+ */
+function selectTerms(theme, hits) {
+  const seen = new Set();
+  const candidates = [];
+
+  for (const hit of hits) {
+    const term = hit.term;
+    if (!term || term.length > MAX_TERM_LENGTH || !TERM_SHAPE.test(term)) continue;
+    // "writing · writing" adds nothing, and neither does "learn" under "learning"
+    if (term === theme || theme.includes(term) || term.includes(theme)) continue;
+    if (seen.has(term)) continue;
+    seen.add(term);
+    candidates.push(hit);
+  }
+
+  candidates.sort((a, b) => {
+    if (a.strong !== b.strong) return a.strong ? -1 : 1;
+    if (a.count !== b.count) return b.count - a.count;
+    return a.firstIndex - b.firstIndex;
+  });
+
+  return candidates.slice(0, MAX_TERMS).map((hit) => hit.term);
+}
+
+/**
+ * Extract themes from text using tiered keyword matching
  * @param {string} text - The conversation text to analyze
  * @param {number} maxThemes - Maximum number of themes to return (default: 5)
- * @returns {string[]} Array of extracted theme names; empty when nothing matches
+ * @returns {Array<{theme: string, score: number, terms: string[]}>} Descending by
+ *   score; empty when nothing matches
  */
 function extractThemes(text, maxThemes = 5) {
   if (!text || typeof text !== "string") {
@@ -203,29 +310,51 @@ function extractThemes(text, maxThemes = 5) {
   }
 
   const normalizedText = text.toLowerCase();
-  const themeScores = {};
+  const scored = [];
 
-  // Score each theme, normalized by keyword-list size so large lists don't dominate
-  for (const { theme, keywordCount, patterns } of THEME_PATTERNS) {
-    let score = 0;
+  for (const { theme, denominator, keywords } of THEME_PATTERNS) {
+    let distinctStrong = 0;
+    let distinctWeak = 0;
+    const hits = [];
 
-    for (const regex of patterns) {
-      const matches = normalizedText.match(regex);
-      if (matches) {
-        score += matches.length;
+    // Distinct keywords, not total hits, so one word repeated cannot carry a theme
+    for (const { keyword, strong, exact, regex } of keywords) {
+      const match = matchKeyword(regex, normalizedText);
+      if (!match) continue;
+
+      if (strong) {
+        distinctStrong += 1;
+      } else {
+        distinctWeak += 1;
       }
+
+      hits.push({
+        term: exact ? keyword : match.first,
+        strong,
+        count: match.count,
+        firstIndex: match.firstIndex,
+      });
     }
 
-    if (score > 0) {
-      themeScores[theme] = score / keywordCount;
-    }
+    if (distinctStrong < 1 && distinctWeak < MIN_DISTINCT_WEAK) continue;
+
+    const raw = 2 * distinctStrong + distinctWeak;
+    scored.push({
+      theme,
+      score: raw / denominator,
+      terms: selectTerms(theme, hits),
+    });
   }
 
-  // Sort themes by score and return top N; [] when nothing matched
-  return Object.entries(themeScores)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, maxThemes)
-    .map(([theme]) => theme);
+  if (scored.length === 0) {
+    return [];
+  }
+
+  scored.sort((a, b) => b.score - a.score || a.theme.localeCompare(b.theme));
+
+  // Relative cutoff, so a focused conversation returns one or two themes
+  const cutoff = RELATIVE_CUTOFF * scored[0].score;
+  return scored.filter((entry) => entry.score >= cutoff).slice(0, maxThemes);
 }
 
 /**

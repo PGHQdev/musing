@@ -1,0 +1,106 @@
+{
+  "fixtures": [
+    {
+      "name": "debugging a stack trace",
+      "text": "Okay so this thing keeps blowing up on me. Every time I hit the endpoint I get the same stack trace, and the top frame points at a line that looks completely fine to me. I dropped a breakpoint two calls above it and stepped through, and the values are exactly what I expect right up until the throw. The console shows the same exception three times in a row, which makes me think something is retrying under the hood. I already tried the obvious thing and cleared the cache. Same crash. I also reverted the last two revisions to see if I broke it recently, and no, it still blows up on the older one, so it was probably broken before and nobody hit that case. What I want from you: read this trace with me and tell me which frame is mine and which is library. I can paste the whole thing if that helps. I have been staring at it long enough that I am not seeing it anymore.",
+      "expectTop": "debugging",
+      "expectAbsent": ["growth", "motivation", "learning", "wisdom"],
+      "expectTerms": ["stack trace", "breakpoint"]
+    },
+    {
+      "name": "splitting one service in two",
+      "text": "We are at the point where one service does too much and I want a second opinion before I settle on a shape. Right now everything lives in one deployable: auth, billing, the job runner, all of it talking to the same schema. Two teams keep stepping on each other in the same tables. The obvious move is to pull the job runner out into its own service with its own store, but then I own a queue, a retry policy, and two sources of truth about a user. I have read enough about microservice migrations to know the failure mode is a distributed monolith where nothing can ship independently anyway. What I would like is help drawing the seam. Which pieces belong together, and what does the contract between them look like once they are apart? I care more about being able to change billing without redeploying the runner than about raw throughput. Our infrastructure is boring and I would like to keep it boring.",
+      "expectTop": "architecture",
+      "expectAbsent": ["growth", "motivation", "learning", "wisdom"],
+      "expectTerms": ["schema", "microservice"]
+    },
+    {
+      "name": "matching two million records",
+      "text": "I have a list of about two million records and for each one I need the closest match in a second list of roughly the same size. The naive version compares every pair, which is quadratic and will never finish. I have been sketching a bucketing approach where I hash each record into a coarse grid first and only compare inside a bucket and its neighbours, which should bring the average case down a lot, though the worst case is still ugly if everything lands in one bucket. The other idea is to build a tree over one list, the classic data structure answer, and query it for each element of the other, which gives me a predictable log factor but costs memory I am not sure I have. Walk me through the tradeoff in terms of complexity rather than wall clock. Also, is there a standard name for the bucketing trick? I am fairly sure I am reinventing something that already has a proper name and I would rather look it up.",
+      "expectTop": "algorithms",
+      "expectAbsent": ["growth", "motivation", "learning", "wisdom"],
+      "expectTerms": ["hash", "data structure"]
+    },
+    {
+      "name": "an offer I have not answered",
+      "text": "I got the offer and I still have not answered it. On paper it is a step up: the title is better, the salary is about fifteen percent higher, and the manager seemed like someone I would want to work for. But the product is something I do not care about at all, and the interview loop had three people telling me the same story about how intense the last two quarters were. My current place is comfortable and slow. I have been here four years, I know where everything is, and I have stopped getting better at anything. The part I keep circling is that I cannot tell whether I want this role or whether I just want to stop feeling stuck where I am. My promotion here got pushed to the next cycle for the second time, so some of this is probably spite. How would you pull those two things apart? I do not need you to answer it for me, I need a way to see which one I am actually answering.",
+      "expectTop": "career",
+      "expectAbsent": ["growth", "motivation", "learning", "wisdom"],
+      "expectTerms": ["salary", "interview"]
+    },
+    {
+      "name": "nothing left by eleven",
+      "text": "Something is off and I want to describe it before I try to fix it. I sleep seven or eight hours and wake up feeling like I got four. By eleven in the morning I have nothing left, and the afternoon is me rereading the same paragraph. I used to lift three mornings a week and I have done it twice since January. I am tired in a way that a weekend does not touch. Work is the same work it was in the autumn, the load has not gone up, but everything takes twice as long and I am short with people who do not deserve it. I cut caffeine after noon and that helped my sleep a little on paper, the tracker says so, but I do not feel any different when I wake up. My guess is this is burnout and not a sleep problem, and that resting harder is not going to fix it. I would rather not go to a doctor yet. Where would you start if you were describing this to yourself?",
+      "expectTop": "health",
+      "expectAbsent": ["growth", "motivation", "learning", "wisdom"],
+      "expectTerms": ["sleep", "tired", "burnout"]
+    },
+    {
+      "name": "cutting a draft in half",
+      "text": "I have a draft that is 2,200 words and it needs to be about 1,200 without losing the argument. The piece opens with a long personal anecdote that I like and that I suspect nobody else needs. After that there are three sections, and the middle one repeats the first in different vocabulary, which I only noticed reading it aloud. The ending trails off into a summary instead of landing anywhere. My instinct is to cut the anecdote to two sentences, merge sections one and two, and write the close again so it makes a claim rather than a recap. What I would like from you is a structural pass, not a line edit. Tell me which paragraphs are carrying the argument and which are throat-clearing. If you think the anecdote earns its place, argue for it, because I am attached to it and I do not trust my own judgement here. I would rather publish something shorter and sharper than something complete.",
+      "expectTop": "writing",
+      "expectAbsent": ["growth", "motivation", "learning", "wisdom"],
+      "expectTerms": ["draft"]
+    },
+    {
+      "name": "nine thousand and a car loan",
+      "text": "Two of us, no kids, and about eleven thousand a month of income after tax. Rent is thirty-one hundred and the lease renews in March with a likely bump. We have nine thousand sitting in an account earning nothing and no debt except a car loan at four percent with two years left. The thing I keep going back and forth on is whether to throw the nine thousand at the car or leave it where it is. Killing the loan frees up four hundred a month, but then the cushion is gone and one bad month puts us on a credit card at twenty-something percent. Our budget also has about two hundred a month of subscriptions we signed up for and forgot about, which is the least defensible cost in the whole thing. I can afford either move on paper. What I want is the sane order of operations, and not a lecture about lattes. Which of these actually moves the number a year from now?",
+      "expectTop": "finance",
+      "expectAbsent": ["growth", "motivation", "learning", "wisdom"],
+      "expectTerms": ["income", "budget", "afford"]
+    },
+    {
+      "name": "the same argument with my sister",
+      "text": "My sister and I have been circling the same argument for about a year now. She calls, I let it go to voicemail more often than not, and then I feel bad and call back days later when the reason has gone stale. The specific thing is that she moved back in with our parents and expects me to take the same view of it that she does, and when I do not she reads it as judgement. I do not think it is judgement, I think I am worn down by being the one who gets the update on everyone in the family. Recently my partner pointed out that I do the same thing with two of my closest friends: long silence, then an over-long message that tries to make up for the silence. That landed harder than I wanted it to. I would like to break the pattern with my sister first, because that is the one that costs me sleep. What would you actually say in a first message that is neither an apology nor a summary of everything I have not said?",
+      "expectTop": "relationships",
+      "expectAbsent": ["growth", "motivation", "learning", "wisdom"],
+      "expectTerms": ["family", "partner", "friends"]
+    },
+    {
+      "name": "which way is up for a plant",
+      "text": "Random question that has nothing to do with what I am working on. How does a plant know which way is up? I have picked up something about hormones pooling on the low side of a cell, but I do not understand what the cell is sensing in the first place. Gravity is a force, not a signal, so something has to convert it. What if you raised a seedling on a slow turntable, does it split the difference and lean sideways, or does it pick one? I read years ago that they flew seeds on a shuttle and got roots heading in every direction, which is either the answer or a different question entirely. I am curious whether the same trick shows up anywhere else in biology, where a cell reads a physical force and turns it into chemistry. Bones, maybe? Tell me the mechanism if it is known, and tell me where the honest edge of what is known sits. I have no use for this, I just want to know how it works.",
+      "expectTop": "curiosity",
+      "expectAbsent": ["growth", "motivation", "learning", "wisdom"],
+      "expectTerms": ["how does", "curious"]
+    },
+    {
+      "name": "it finally ran end to end",
+      "text": "It worked. After four days of this thing sitting at ninety percent, the last piece finally went in and the whole flow runs end to end without me touching it. I ran it eleven times in a row just to be sure it was not luck. Watching the first real record come out the other side was honestly a small thrill, and I said something out loud in an empty room. The part that made the difference was embarrassingly small: I was passing the wrong identifier two layers down, and once that was right everything downstream lined up. Amazing how much of this comes down to one character. I want to write down what I actually did while it is fresh, because later on I will not remember why any of it is shaped this way. Can you help me turn my messy notes into something a future me can follow? Also I would like to celebrate this properly before I look at the list of things it still does not handle.",
+      "expectTop": "excitement",
+      "expectAbsent": ["growth", "motivation", "learning", "wisdom"],
+      "expectTerms": ["finally", "amazing"]
+    },
+    {
+      "name": "demo on thursday, two of four done",
+      "text": "The deadline is Thursday morning and it is Tuesday night. Two of the four things I promised are done, one is half done, and the fourth I have not started. I keep opening the file and closing it again. My chest is tight and I have been awake since four, and I have reread the same invite thread three times looking for a sentence that says it is fine if this slips, which is not in there. The honest version is that I over-promised in a meeting where I wanted to sound capable, and I am worried the room will read Thursday as the whole story. Now the choice is to show two solid things and say the rest is coming, or stay up both nights and show four that all wobble. The second one makes me nervous in a way I can feel in my hands. It is the pressure I built for myself and I know that. Tell me how to write the two sentences at the start of that demo that reset expectations without sounding like excuses.",
+      "expectTop": "anxiety",
+      "expectAbsent": ["growth", "motivation", "learning", "wisdom"],
+      "expectTerms": ["worried", "nervous"]
+    },
+    {
+      "name": "contract or equity",
+      "text": "Two offers of a different kind: I can take the contract that pays for eight months and leaves my evenings alone, or I can take the equity-heavy one where I would own a whole area and probably not see a weekend until spring. Same start date, so I cannot do both, and I have to answer by Friday. The contract is the safe option and I think I would be a little bored by week six. The other option is the kind of thing I would tell people about later, and also the kind of thing that ends with a company quietly folding. I have written the obvious list of pros and cons twice and both times it came out even, which tells me the list is the wrong instrument. I keep weighing the same two lines against each other and getting nowhere. What I would like is another way to frame the choice, something that gets at what I would regret. Ask me questions rather than giving me an answer.",
+      "expectTop": "decision-making",
+      "expectAbsent": ["growth", "motivation", "learning", "wisdom"],
+      "expectTerms": ["pros and cons", "choice"]
+    },
+    {
+      "name": "ambiguous: permission to stop",
+      "text": "I have been going back and forth on the same thing for a while and I want to talk it through with someone who is not in my head. It is not urgent and nothing is on fire. I think what is happening is that I want permission to stop working on something I already decided is not going anywhere, and I am looking for a reason that sounds better than admitting I am bored of it. I have put a lot of evenings into it. Not nothing, but not so much that walking away would be a disaster. If you ask me what I would do if I found it today with the same information in front of me, the answer is that I would not start. So the answer is probably obvious and I am asking anyway. Tell me what you would want to hear before answering, and do not be gentle about it.",
+      "expectTop": "decision-making",
+      "expectAbsent": ["growth", "motivation", "learning", "wisdom", "career", "productivity"]
+    },
+    {
+      "name": "ambiguous: a message meant for someone else",
+      "text": "Odd one. A friend of mine sent me a long message last night that I think was meant for someone else. It references a plan I am not part of and ends with an apology for something I do not recognise. I have read it four times. Either she is telling me something sideways, or it went to the wrong thread and she has not noticed yet. The easy move is to say I think this was meant for someone else and let it go. The other is to ask what the apology is about, which opens something I might not want opened. We have had one of those years where we are both polite and slightly careful with each other, and I do not know if this is the crack or just a mis-send. I do not need advice on how to be a good person about it. I want to know what each of the two moves actually costs me, because I keep picking the easy one and then feeling flat afterwards.",
+      "expectTop": "relationships",
+      "expectAbsent": ["growth", "motivation", "learning", "wisdom", "communication"],
+      "expectTerms": ["friend"]
+    },
+    {
+      "name": "too short to score",
+      "text": "Hey, quick one before I forget. Does this look right to you?",
+      "expectEmpty": true
+    }
+  ]
+}

@@ -183,7 +183,8 @@ async function extractHistoryThemes(settings) {
   // Use the theme extractor; raw keywords are not theme names, so no fallback
   let themes = [];
   if (typeof extractThemes === "function") {
-    themes = extractThemes(combinedText, 10);
+    // Adapter: task 4 replaces this with real scored-theme handling
+    themes = extractThemes(combinedText, 5).map((t) => t.theme);
   } else {
     console.warn("[Musing] extractThemes unavailable; skipping history themes");
   }

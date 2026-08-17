@@ -522,7 +522,8 @@ async function processConversationsLocally() {
   const combinedText = conversations.join("\n\n");
 
   // Extract themes using local keyword matching
-  const themes = extractThemes(combinedText, 5);
+  // Adapter: task 4 replaces this with real scored-theme handling
+  const themes = extractThemes(combinedText, 5).map((t) => t.theme);
   const blockedSet = await Store.themes.blockedSet();
   const filteredThemes = filterBlockedThemes(themes, blockedSet);
 
