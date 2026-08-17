@@ -405,24 +405,31 @@ async function processHistoryThemes() {
     // Extract themes from history using the history-extractor module
     const result = await extractHistoryThemes(settings);
 
-    // An empty extraction is a result too. Skipping the write leaves themes
-    // from an older browsing window driving the cache key and the ranking, so
-    // it is stored like any other outcome.
-    const themes = Array.isArray(result.themes) ? result.themes : [];
+    // An extraction that found nothing is a result, and storing it retires the
+    // themes from an older browsing window that would otherwise keep driving
+    // the cache key and the ranking. A read that never happened is not: history
+    // is re-extracted only when the user saves history settings, so clearing on
+    // a failed search would cost the user their themes until they reopen the
+    // popup. `ok` separates the two.
+    const themes = result.ok && Array.isArray(result.themes) ? result.themes : [];
 
-    await Store.themes.setHistoryThemes({
-      themes,
-      extractedAt: Date.now(),
-      sourceCount: result.sourceCount,
-      titleCount: result.titleCount || 0,
-    });
+    if (result.ok) {
+      await Store.themes.setHistoryThemes({
+        themes,
+        extractedAt: Date.now(),
+        sourceCount: result.sourceCount,
+        titleCount: result.titleCount || 0,
+      });
 
-    console.log("[Musing] History themes extracted:", themes.length, "themes from", result.sourceCount, "sources");
+      console.log("[Musing] History themes extracted:", themes.length, "themes from", result.sourceCount, "sources");
+    } else {
+      console.warn("[Musing] History read failed; keeping the stored history themes");
+    }
 
     // Refresh quote cache with combined themes
     await refreshQuoteCacheWithHistoryThemes();
 
-    return { success: true, themes, sourceCount: result.sourceCount };
+    return { success: true, ok: result.ok === true, themes, sourceCount: result.sourceCount };
   } catch (error) {
     console.error("[Musing] History processing failed:", error);
     return { success: false, error: error.message };

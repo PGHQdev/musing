@@ -116,9 +116,13 @@ const MAX_HISTORY_THEMES = 5;
  * @param {boolean} settings.enableBrowserHistory - Extract from page titles
  * @param {number} settings.historyDaysBack - Days of history to analyze
  * @param {string[]} settings.excludedDomains - Additional domains to exclude
- * @returns {Promise<{themes: {theme: string, score: number, terms: string[]}[],
- *   sourceCount: number, titleCount: number}>} At most MAX_HISTORY_THEMES
- *   scored themes, descending
+ * @returns {Promise<{ok: boolean, themes: {theme: string, score: number,
+ *   terms: string[]}[], sourceCount: number, titleCount: number}>} At most
+ *   MAX_HISTORY_THEMES scored themes, descending. `ok` is true only when
+ *   history was read and extraction ran, so a caller can tell an extraction
+ *   that found nothing from a read that never happened: history switched off,
+ *   permission missing, or a search that threw all return `ok: false` with the
+ *   same empty theme list.
  */
 async function extractHistoryThemes(settings) {
   const {
@@ -128,14 +132,14 @@ async function extractHistoryThemes(settings) {
   } = settings;
 
   if (!enableBrowserHistory) {
-    return { themes: [], sourceCount: 0 };
+    return { ok: false, themes: [], sourceCount: 0 };
   }
 
   // Check if we have history permission
   const hasPermission = await chrome.permissions.contains({ permissions: ["history"] });
   if (!hasPermission) {
     console.log("[Musing] History permission not granted");
-    return { themes: [], sourceCount: 0 };
+    return { ok: false, themes: [], sourceCount: 0 };
   }
 
   // Query history; permission can be revoked between the check above and this call
@@ -150,7 +154,7 @@ async function extractHistoryThemes(settings) {
     });
   } catch (error) {
     console.warn("[Musing] History search failed:", error.message);
-    return { themes: [], sourceCount: 0 };
+    return { ok: false, themes: [], sourceCount: 0 };
   }
 
   const textForExtraction = [];
@@ -194,6 +198,7 @@ async function extractHistoryThemes(settings) {
   }
 
   return {
+    ok: true,
     themes,
     sourceCount,
     titleCount: textForExtraction.length,
