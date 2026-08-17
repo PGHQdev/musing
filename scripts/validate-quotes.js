@@ -29,10 +29,15 @@ const VAGUE_SOURCES = ["attributed", "unknown", "unsourced", "anonymous", "speec
 // four between 0.933 and 1.000.
 //
 // The 0.90 line sits above every distinct pair in the bank: the closest is
-// 0.765 (two renderings of one Hamming sentence, ids 175 and 378), so there is
-// 0.135 of headroom. The 6-word floor keeps short aphorisms from colliding on
-// function words alone — "Procrastination is the thief of time" reaches 0.667
-// against five unrelated quotes.
+// 0.714, Hippocrates on the art being long against Longfellow echoing him (ids
+// 284 and 309), so there is 0.186 of headroom.
+//
+// The 6-word floor bounds the coarse end of the ratio. Under 6 words one shared
+// word moves coverage by 0.2 or more, so a short aphorism whose every word
+// appears in a longer quote scores 1.00 on ordinary reuse rather than on
+// duplication. No pair in the bank is excluded by the floor today — running the
+// same check at a 1-word floor reports the same zero pairs — so it guards the
+// short lines the bank gains later.
 const NEAR_DUP_RATIO = 0.9;
 const NEAR_DUP_MIN_WORDS = 6;
 
