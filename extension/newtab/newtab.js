@@ -18,7 +18,7 @@
     growth: { lead: "you're focused on self-improvement", phrase: "focused on self-improvement" },
     frustration: { lead: "you've been working through a challenge", phrase: "working through a challenge" },
     curiosity: { lead: "you're exploring something new", phrase: "exploring something new" },
-    excitement: { lead: "you've had a breakthrough", phrase: "had a breakthrough" },
+    excitement: { lead: "you've had a breakthrough", phrase: "having a breakthrough" },
     anxiety: { lead: "you're navigating uncertainty", phrase: "navigating uncertainty" },
     career: { lead: "you're thinking about your career", phrase: "thinking about your career" },
     relationships: { lead: "you're thinking about relationships", phrase: "thinking about relationships" },
@@ -114,26 +114,58 @@
   }
 
   /**
+   * Drop any term that already appears in the phrase, so the reason line
+   * carries evidence instead of repeating the theme label. A term is dropped
+   * when the phrase contains it outright ("complex" inside "tackling
+   * something complex"), or when the term contains a phrase word of 4+
+   * characters ("algorithmic" contains "algorithm"). Short phrase words
+   * ("on", "the") are excluded from the second check so they can't zero out
+   * an unrelated term.
+   */
+  function filterRedundantTerms(phrase, terms) {
+    const lowerPhrase = String(phrase).toLowerCase();
+    const phraseWords = lowerPhrase.split(/\s+/).filter((w) => w.length >= 4);
+    return terms.filter((term) => {
+      const lowerTerm = String(term).toLowerCase();
+      if (lowerPhrase.includes(lowerTerm)) return false;
+      return !phraseWords.some((w) => lowerTerm.includes(w));
+    });
+  }
+
+  /**
    * Compose the recommendation-reason text for a quote payload. Pure function
    * (no DOM), so it can be exercised directly outside the page.
    *
-   * Priority: quote.aiReason, then quote.reason (fallback origin or no theme
-   * renders nothing), then matched terms beside the theme phrase, then the
-   * plain theme lead. Returns null when no reason should show.
+   * Priority: quote.aiReason; then quote.reason when present (fallback origin
+   * or no theme renders nothing; matched terms, filtered against the phrase
+   * and capped at 2, render beside the phrase; otherwise the plain lead);
+   * then, only when quote.reason is absent altogether (a daily quote pinned
+   * before this task shipped), quote.matchedThemes[0]'s lead, matching what
+   * the page showed before this task. Returns null when no reason should show.
    */
   function composeReason(quote) {
     if (quote && quote.aiReason) return quote.aiReason;
 
     const reason = quote && quote.reason;
-    if (!reason || reason.origin === "fallback" || !reason.theme) return null;
-
-    const copy = getThemeCopy(reason.theme);
-    const terms = Array.isArray(reason.terms) ? reason.terms.filter(Boolean) : [];
-    if (terms.length > 0) {
-      const shown = terms.slice(0, 2).map((t) => `"${t}"`).join(", ");
-      return `${copy.phrase} · ${shown}`;
+    if (reason) {
+      if (reason.origin === "fallback" || !reason.theme) return null;
+      const copy = getThemeCopy(reason.theme);
+      const rawTerms = Array.isArray(reason.terms) ? reason.terms.filter(Boolean) : [];
+      const terms = filterRedundantTerms(copy.phrase, rawTerms).slice(0, 2);
+      if (terms.length > 0) {
+        const shown = terms.map((t) => `"${t}"`).join(", ");
+        return `${copy.phrase} · ${shown}`;
+      }
+      return copy.lead;
     }
-    return copy.lead;
+
+    // No `reason` key at all: a legacy daily-quote record stored before this
+    // task shipped. Render what the old code rendered so an upgrading user
+    // doesn't lose the reason line for the rest of the day.
+    if (Array.isArray(quote?.matchedThemes) && quote.matchedThemes.length > 0) {
+      return getThemeCopy(quote.matchedThemes[0]).lead;
+    }
+    return null;
   }
 
   const quoteEl = document.getElementById("quote");
