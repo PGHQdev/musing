@@ -277,6 +277,11 @@ const SUPPRESSED_FORMS = new Set([
 
 // A theme survives only with one strong keyword or two distinct weak ones
 const MIN_DISTINCT_WEAK = 2;
+// Smallest divisor a theme may score against. Score is a fraction of the theme's
+// own vocabulary, so a short list makes every surviving hit worth more, and
+// removing a homograph would hand the theme confidence it did not earn. The
+// floor stops a seven-word theme outscoring a twenty-word one on one hit.
+const MIN_DENOMINATOR = 12;
 // A theme survives only within this fraction of the top score.
 // scripts/theme-fixtures.json passes 20 of 20 across (0.3667, 0.4444], so there is
 // 0.033 of headroom below and 0.044 above. The band is pinned by "relationships"
@@ -306,7 +311,7 @@ const THEME_PATTERNS = Object.entries(THEME_KEYWORDS).map(([theme, tiers]) => {
   return {
     theme,
     // Strong keywords count double on both sides of the ratio
-    denominator: 2 * tiers.strong.length + tiers.weak.length,
+    denominator: Math.max(2 * tiers.strong.length + tiers.weak.length, MIN_DENOMINATOR),
     keywords: [
       ...tiers.strong.map((keyword) => build(keyword, true)),
       ...tiers.weak.map((keyword) => build(keyword, false)),
