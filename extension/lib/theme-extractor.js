@@ -34,10 +34,10 @@ const THEME_KEYWORDS = {
   },
   algorithms: {
     // "sort" and "search" were removed: "sort of" is a hedge and "search the logs"
-    // is not an algorithm. "big o", "graph" and "graphs" are exact, so "big one"
-    // and "graphql" no longer count.
+    // is not an algorithm. "big o" is exact, so "big one" no longer counts, and
+    // "graph" keeps its plural while SUPPRESSED_FORMS holds off "graphql".
     strong: ["algorithm", "data structure", "hash", "recursion", "dynamic programming"],
-    weak: ["complexity", "tree", "graph", "graphs", "optimization", "big o"]
+    weak: ["complexity", "tree", "graph", "optimization", "big o"]
   },
 
   // Learning & Growth
@@ -48,9 +48,12 @@ const THEME_KEYWORDS = {
   growth: {
     // "develop" matched every "developer" and "development", "path" every file
     // path, "transform" every "transformer", "grow" every growing table, and
-    // "better" every comparison. All five were removed.
-    strong: ["growth", "evolve"],
-    weak: ["improve", "progress", "change", "journey", "milestone"]
+    // "better" every comparison. All five were removed, and "change" went with
+    // them once it widened: "we changed the schema" is not growth, and the
+    // change theme still carries the word. "evolve" is weak for the same reason
+    // it is weak in change: a schema evolves.
+    strong: ["growth"],
+    weak: ["improve", "progress", "journey", "milestone", "evolve"]
   },
 
   // Emotional
@@ -142,10 +145,10 @@ const THEME_KEYWORDS = {
   creativity: {
     // "design" was removed for api design, "create" for "create a table",
     // "unique" for a unique index, "original" for "the original version".
-    // "idea", "ideas" and "art" are exact, so "ideally" and "artifact" no
-    // longer count.
+    // "art" is exact, so "artifact" no longer counts, and "idea" keeps its
+    // plural while SUPPRESSED_FORMS holds off "ideally".
     strong: ["creativ", "brainstorm", "innovate", "imagine", "inventive"],
-    weak: ["idea", "ideas", "art"]
+    weak: ["idea", "art"]
   },
 
   // Decision Making
@@ -199,6 +202,11 @@ const THEME_KEYWORDS = {
     // CSS property, "transform" is a transformer, and one strong keyword fires
     // a theme alone. As weak keywords they keep every on-theme inflection and
     // need a second distinct word before the theme survives.
+    // "change" stays exact. Widening it to reach "changed" and "changes" was
+    // measured: it bought one more true fire and five false ones, because
+    // "I changed the config" is in every engineering conversation. "changing"
+    // is out of reach either way, since the pattern is \bchange\w* and the
+    // word drops its "e".
     strong: [],
     weak: ["adapt", "transition", "transform", "evolve", "change", "adjust", "shift", "update"]
   },
@@ -229,22 +237,43 @@ function escapeRegExp(str) {
   return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
-// Words whose bare form is on-theme and whose widened forms are not
-// ("work" -> "workflow", "time" -> "timeline", "change" -> "changelog",
-// "life" -> "lifecycle", "balance" -> "balancer", "essential" -> "essentially",
-// "idea" -> "ideally", "art" -> "artifact", "graph" -> "graphql",
-// "big o" -> "big one"). A plural that the singular can no longer reach is
-// listed beside it: "ideas", "graphs".
+// Words whose bare form is on-theme and whose widened set is mostly noise, so
+// no short list of forms could clean it up ("work" -> "workflow", "time" ->
+// "timeline", "life" -> "lifecycle", "balance" -> "balancer", "essential" ->
+// "essentially", "art" -> "artifact" and 250 other art* words, "big o" ->
+// "big one"). Where the false forms are a short closed list, suppress them in
+// SUPPRESSED_FORMS instead and keep the widening: exact match also throws away
+// every honest inflection, including the plural.
 const EXACT_MATCH_KEYWORDS = new Set([
-  "work", "time", "change", "life", "balance", "essential",
-  "idea", "ideas", "art", "graph", "graphs", "big o"
+  "work", "time", "change", "life", "balance", "essential", "art", "big o"
 ]);
 
-// Widened forms that invert the meaning of their keyword. "fearless" is a courage
-// keyword, so without this one sentence feeds fear and courage at once. The forms
-// are suppressed for a keyword that widened into them ("fear"), and kept for a
-// keyword that is one of them ("fearless" still matches "fearlessly").
-const INVERTED_FORMS = new Set(["fearless", "fearlessly", "fearlessness"]);
+// Widened forms a keyword should not claim, either because they invert its
+// meaning or because they are a different word that shares its opening letters.
+// A form is suppressed for a keyword that widened into it ("fear" -> "fearless",
+// "idea" -> "ideally"), and kept for a keyword that is one of them ("fearless"
+// still matches "fearlessly"). A theme that wants one of these words has to name
+// it as its own keyword.
+const SUPPRESSED_FORMS = new Set([
+  // "fearless" is a courage keyword; without this one sentence feeds fear and
+  // courage at once
+  "fearless", "fearlessly", "fearlessness",
+  // creativity's "idea" is not an ideal
+  "ideal", "ideals", "ideally", "idealism", "idealist", "idealists",
+  "idealistic", "idealistically", "idealize", "idealized", "idealizes",
+  "idealizing", "idealization",
+  // algorithms' "graph" is not a graphic
+  "graphql", "graphic", "graphics", "graphical", "graphically", "graphite",
+  // programming's "react" is not a reaction, and a strong keyword fires alone,
+  // so without this "her reaction to the news" reads as a programming question
+  "reaction", "reactions", "reacted", "reacting", "reactionary",
+  // debugging's "exception" is not an exceptional year
+  "exceptional", "exceptionally", "exceptionable", "exceptionality", "exceptionalness",
+  // communication's "listen" is not an event listener
+  "listener", "listeners",
+  // writing's "writ" is not a writable directory
+  "writable", "writeable", "writability"
+]);
 
 // A theme survives only with one strong keyword or two distinct weak ones
 const MIN_DISTINCT_WEAK = 2;
@@ -300,7 +329,7 @@ function matchKeyword(regex, keyword, text) {
 
   while ((match = regex.exec(text)) !== null) {
     const form = match[0];
-    if (INVERTED_FORMS.has(form) && !INVERTED_FORMS.has(keyword)) continue;
+    if (SUPPRESSED_FORMS.has(form) && !SUPPRESSED_FORMS.has(keyword)) continue;
     const seen = forms.get(form);
     if (seen) {
       seen.count += 1;
