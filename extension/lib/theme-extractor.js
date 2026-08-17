@@ -219,7 +219,12 @@ const INVERTED_FORMS = new Set(["fearless", "fearlessly", "fearlessness"]);
 
 // A theme survives only with one strong keyword or two distinct weak ones
 const MIN_DISTINCT_WEAK = 2;
-// A theme survives only within this fraction of the top score
+// A theme survives only within this fraction of the top score.
+// scripts/theme-fixtures.json passes 20 of 20 across (0.3667, 0.4444], so there is
+// 0.033 of headroom below and 0.044 above. The band is pinned by "relationships"
+// at ratio 0.3667 in the day-rate fixture, which must be cut, and "communication"
+// at 0.4444 in the two-diagrams fixture, which must survive. Changing a keyword
+// moves those pins; re-run scripts/validate-themes.js.
 const RELATIVE_CUTOFF = 0.4;
 // Reason-line limits: how many terms per theme and how long each may be
 const MAX_TERMS = 3;
@@ -252,30 +257,78 @@ const THEME_PATTERNS = Object.entries(THEME_KEYWORDS).map(([theme, tiers]) => {
 });
 
 /**
- * Collect every match of one keyword pattern
+ * Collect the words one keyword pattern matched
+ * An exact-match keyword can only match itself, so its form is the keyword.
  * @param {RegExp} regex - Global pattern for a single keyword
  * @param {string} keyword - The keyword the pattern was built from
  * @param {string} text - Lowercased conversation text
- * @returns {{count: number, first: string, firstIndex: number}|null}
+ * @returns {Map<string, {count: number, firstIndex: number}>} Empty when nothing matched
  */
 function matchKeyword(regex, keyword, text) {
   regex.lastIndex = 0;
-  let count = 0;
-  let first = "";
-  let firstIndex = -1;
+  const forms = new Map();
   let match;
 
   while ((match = regex.exec(text)) !== null) {
     const form = match[0];
     if (INVERTED_FORMS.has(form) && !INVERTED_FORMS.has(keyword)) continue;
-    if (count === 0) {
-      first = form;
-      firstIndex = match.index;
+    const seen = forms.get(form);
+    if (seen) {
+      seen.count += 1;
+    } else {
+      forms.set(form, { count: 1, firstIndex: match.index });
     }
-    count += 1;
   }
 
-  return count > 0 ? { count, first, firstIndex } : null;
+  return forms;
+}
+
+/**
+ * Merge keywords that matched the same word, so one word counts once
+ * "learning" matches both the "learn" and "learning" keywords, and without this
+ * that single word would score as two distinct hits. A group counts as strong
+ * when any keyword in it is strong.
+ * @param {Array<{keyword: string, strong: boolean, forms: Map}>} matched
+ * @returns {Array<{strong: boolean, count: number, firstIndex: number, term: string}>}
+ */
+function groupMatches(matched) {
+  const parent = matched.map((_, index) => index);
+  const find = (index) => (parent[index] === index ? index : (parent[index] = find(parent[index])));
+
+  const formOwner = new Map();
+  matched.forEach((entry, index) => {
+    for (const form of entry.forms.keys()) {
+      if (formOwner.has(form)) {
+        parent[find(index)] = find(formOwner.get(form));
+      } else {
+        formOwner.set(form, index);
+      }
+    }
+  });
+
+  const groups = new Map();
+  matched.forEach((entry, index) => {
+    const root = find(index);
+    let group = groups.get(root);
+    if (!group) {
+      group = { strong: false, count: 0, firstIndex: Infinity, term: "", forms: new Set() };
+      groups.set(root, group);
+    }
+    if (entry.strong) group.strong = true;
+
+    // Two keywords find the same word at the same places, so count each form once
+    for (const [form, info] of entry.forms) {
+      if (group.forms.has(form)) continue;
+      group.forms.add(form);
+      group.count += info.count;
+      if (info.firstIndex < group.firstIndex) {
+        group.firstIndex = info.firstIndex;
+        group.term = form;
+      }
+    }
+  });
+
+  return [...groups.values()];
 }
 
 /**
@@ -291,8 +344,8 @@ function selectTerms(theme, hits) {
   for (const hit of hits) {
     const term = hit.term;
     if (!term || term.length > MAX_TERM_LENGTH || !TERM_SHAPE.test(term)) continue;
-    // "writing · writing" adds nothing, and neither does "learn" under "learning"
-    if (term === theme || theme.includes(term) || term.includes(theme)) continue;
+    // "writing · writing" adds nothing, and neither does "debugging" under "debugging"
+    if (term === theme || term.includes(theme)) continue;
     if (seen.has(term)) continue;
     seen.add(term);
     candidates.push(hit);
@@ -323,27 +376,23 @@ function extractThemes(text, maxThemes = 5) {
   const scored = [];
 
   for (const { theme, denominator, keywords } of THEME_PATTERNS) {
+    const matched = [];
+
+    for (const { keyword, strong, regex } of keywords) {
+      const forms = matchKeyword(regex, keyword, normalizedText);
+      if (forms.size > 0) matched.push({ keyword, strong, forms });
+    }
+
+    // Distinct words, not total hits, so one word cannot carry a theme twice
+    const hits = groupMatches(matched);
     let distinctStrong = 0;
     let distinctWeak = 0;
-    const hits = [];
-
-    // Distinct keywords, not total hits, so one word repeated cannot carry a theme
-    for (const { keyword, strong, exact, regex } of keywords) {
-      const match = matchKeyword(regex, keyword, normalizedText);
-      if (!match) continue;
-
-      if (strong) {
+    for (const hit of hits) {
+      if (hit.strong) {
         distinctStrong += 1;
       } else {
         distinctWeak += 1;
       }
-
-      hits.push({
-        term: exact ? keyword : match.first,
-        strong,
-        count: match.count,
-        firstIndex: match.firstIndex,
-      });
     }
 
     if (distinctStrong < 1 && distinctWeak < MIN_DISTINCT_WEAK) continue;
