@@ -18,3 +18,6 @@ jobs:
             while IFS= read -r -d '' f; do node --check "$f"; done
       - name: Syntax-check scripts
         run: bash -n scripts/zip-extension.sh
+      - name: Validate data
+        run: |
+          for f in scripts/validate-*.js; do node "$f"; done

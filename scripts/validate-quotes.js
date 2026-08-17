@@ -1,0 +1,142 @@
+#!/usr/bin/env node
+// Validates extension/data/quotes.json against the quote-bank rules.
+// CommonJS, no dependencies. Run: node scripts/validate-quotes.js
+"use strict";
+
+const fs = require("fs");
+const path = require("path");
+
+const { getAllThemes } = require("../extension/lib/theme-extractor.js");
+
+const GENERIC_THEMES = new Set(["growth", "motivation", "persistence", "wisdom", "change", "success"]);
+const MIN_PER_THEME = 12;
+const MAX_PER_AUTHOR = 8;
+const MAX_TAGS = 3;
+const VAGUE_SOURCES = ["attributed", "unknown", "unsourced", "anonymous", "speech", "interview", "widely quoted", "various", "n/a", "unclear", "disputed"];
+
+const QUOTES_PATH = path.join(__dirname, "..", "extension", "data", "quotes.json");
+
+function normalizeText(text) {
+  return String(text)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+}
+
+function main() {
+  const violations = [];
+  const raw = fs.readFileSync(QUOTES_PATH, "utf8");
+  const data = JSON.parse(raw);
+
+  // Check 1: top-level shape
+  const hasValidShape =
+    data && typeof data === "object" && !Array.isArray(data) && Array.isArray(data.quotes) && data.quotes.length > 0;
+  if (!hasValidShape) {
+    violations.push("top level must be {version, quotes} with a non-empty quotes array");
+    report(violations);
+    process.exit(1);
+  }
+
+  const quotes = data.quotes;
+  const allThemes = getAllThemes();
+  const themeVocab = new Set(allThemes);
+
+  const seenIds = new Set();
+  const seenTexts = new Map(); // normalized text -> first id that used it
+  const themeCounts = {};
+  const authorCounts = {};
+  allThemes.forEach((t) => { themeCounts[t] = 0; });
+
+  quotes.forEach((q, index) => {
+    const id = q && q.id;
+    const label = Number.isInteger(id) ? `id ${id}` : `quote at index ${index} (no valid id)`;
+
+    // Check 2: id is a positive integer and unique
+    if (!Number.isInteger(id) || id <= 0) {
+      violations.push(`${label}: id must be a positive integer`);
+    } else if (seenIds.has(id)) {
+      violations.push(`id ${id}: duplicate id`);
+    } else {
+      seenIds.add(id);
+    }
+
+    // Check 3: text non-empty and unique after normalization
+    if (typeof q.text !== "string" || q.text.trim() === "") {
+      violations.push(`${label}: text must be a non-empty string`);
+    } else {
+      const norm = normalizeText(q.text);
+      if (seenTexts.has(norm)) {
+        violations.push(`${label}: text duplicates ${seenTexts.get(norm)} after normalization`);
+      } else {
+        seenTexts.set(norm, label);
+      }
+    }
+
+    // Check 4: author non-empty
+    if (typeof q.author !== "string" || q.author.trim() === "") {
+      violations.push(`${label}: author must be a non-empty string`);
+    } else {
+      authorCounts[q.author] = (authorCounts[q.author] || 0) + 1;
+    }
+
+    // Check 5: source non-empty, at least 4 chars, not vague
+    if (typeof q.source !== "string" || q.source.trim() === "") {
+      violations.push(`${label}: source must be a non-empty string`);
+    } else if (q.source.length < 4) {
+      violations.push(`${label}: source must be at least 4 characters`);
+    } else {
+      const lowerSource = q.source.toLowerCase();
+      if (VAGUE_SOURCES.some((v) => lowerSource === v || lowerSource.startsWith(v))) {
+        violations.push(`${label}: source "${q.source}" is too vague`);
+      }
+    }
+
+    // Check 6: themes 1-3 entries, all in vocab, at least one non-generic
+    const themes = Array.isArray(q.themes) ? q.themes : null;
+    if (!themes || themes.length < 1 || themes.length > MAX_TAGS) {
+      violations.push(`${label}: themes must have 1 to ${MAX_TAGS} entries`);
+    } else {
+      const illegal = themes.filter((t) => !themeVocab.has(t));
+      illegal.forEach((t) => violations.push(`${label}: theme "${t}" is not in getAllThemes()`));
+      if (illegal.length === 0 && themes.every((t) => GENERIC_THEMES.has(t))) {
+        violations.push(`${label}: themes are all generic (${themes.join(", ")})`);
+      }
+      themes.forEach((t) => {
+        if (themeVocab.has(t)) themeCounts[t] += 1;
+      });
+    }
+  });
+
+  // Check 7: every theme carried by at least MIN_PER_THEME quotes
+  allThemes.forEach((theme) => {
+    if (themeCounts[theme] < MIN_PER_THEME) {
+      violations.push(`theme "${theme}": only ${themeCounts[theme]} quotes, needs at least ${MIN_PER_THEME}`);
+    }
+  });
+
+  // Check 8: no author over MAX_PER_AUTHOR
+  Object.entries(authorCounts).forEach(([author, count]) => {
+    if (count > MAX_PER_AUTHOR) {
+      violations.push(`author "${author}": appears ${count} times, max is ${MAX_PER_AUTHOR}`);
+    }
+  });
+
+  report(violations);
+
+  if (violations.length > 0) {
+    process.exit(1);
+  }
+
+  console.log(
+    `OK: ${quotes.length} quotes, ${allThemes.length} themes, ${Object.keys(authorCounts).length} authors`
+  );
+  process.exit(0);
+}
+
+function report(violations) {
+  if (violations.length === 0) return;
+  console.error(`${violations.length} violation(s):`);
+  violations.forEach((v) => console.error(`  - ${v}`));
+}
+
+main();
