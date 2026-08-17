@@ -4,6 +4,39 @@ All notable changes to Musing are documented here. The format is based on
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project
 follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - 2026-08-18
+
+### Added
+
+- The quote bank holds 340 quotes across 34 themes and 177 authors, up from 93.
+  Every attribution names a source, and two validators check the bank and the
+  theme keywords on every push.
+- The reason line under a quote names up to two of the words it matched from
+  your own text, beside the theme phrase: `working through anxiety ·
+  "deadline"`.
+
+### Changed
+
+- Theme extraction scores every theme it finds from strong and weak keyword
+  tiers, and returns the terms behind each score. It no longer returns a fixed
+  top five.
+- Quote ranking favors a theme that is rare in the bank over a common one, and
+  the pick is weighted by rank, so a specific match surfaces more often than a
+  generic one.
+- Conversation themes and browser-history themes are each scaled against their
+  own top score before merging. History can lift a theme but never outranks the
+  leading conversation theme.
+- Each topic keeps a pool of 30 quotes, so the tail of a large theme stays
+  reachable.
+
+### Fixed
+
+- Nine duplicate quotes and one misattributed paraphrase are gone, and two
+  attributions are corrected.
+- The cached quote is dropped when the extension updates, so a new bank takes
+  effect on the next new tab.
+- Turning off browser history clears its stored themes in a single write.
+
 ## [1.2.4] - 2026-08-10
 
 ### Fixed

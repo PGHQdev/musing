@@ -49,6 +49,16 @@
   // Version changelog - keyed by version number
   // Add entries when releasing new versions
   const VERSION_CHANGELOG = {
+    "1.3.0": {
+      icon: "📚",
+      title: "What's New in v1.3.0",
+      items: [
+        { icon: "✍️", text: "340 quotes, up from 93, each one with a checked source" },
+        { icon: "🎯", text: "Matching leans on your more specific topics, so quotes fit closer" },
+        { icon: "💬", text: "The reason line now shows the words it matched from your own text" },
+        { icon: "🔄", text: "An update refreshes your quote right away" },
+      ],
+    },
     "1.2.4": {
       icon: "🔧",
       title: "What's New in v1.2.4",
