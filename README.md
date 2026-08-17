@@ -28,7 +28,7 @@ Your most honest record of what you care about is no longer your browsing histor
 
 ## Features
 
-- **Context-aware quotes** — a bundled database of 93 quotes across 27 themes, matched to the topics you have been discussing.
+- **Context-aware quotes** — a bundled database of 342 sourced quotes across 34 themes, matched to the topics you have been discussing.
 - **Local by default** — theme extraction is keyword matching inside the extension. No account, no backend, no network request to open a tab.
 - **Works across Claude, ChatGPT, and Gemini** — one shared capture core reads lightweight, sanitized context from each site.
 - **"Less like this"** — block a theme and it drops out of both matching and future extraction.

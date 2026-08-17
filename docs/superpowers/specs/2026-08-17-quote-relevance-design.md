@@ -269,7 +269,8 @@ stages 2 through 5.
 
 ## 11. Amended during implementation
 
-Two decisions in section 3 changed while Task 6 was implemented. The rest of this
+Two decisions in section 3 changed while Task 6 was implemented, and three more
+in sections 1, 5 and 7 changed in the review pass before merge. The rest of this
 document is the design as approved.
 
 **The denominator floor** (`score = raw / max(2*strongCount + weakCount, 12)`).
@@ -291,3 +292,24 @@ keyword to `\b{keyword}\w*` also claims words that merely start the same way:
 including the plural, so it is now reserved for keywords whose widened set is
 mostly noise. Everything else keeps widening and names its false forms, which
 `matchKeyword` skips unless the keyword is one of them.
+
+**Bank size and the per-author cap** (sections 1 and 7). The target of "about 400
+quotes" and the cap of 4 quotes per author were both set before the sourcing work.
+Requiring a citable source for every line made 4 too tight for the authors who
+carry the thin themes, so the validator enforces 8, and the bank landed at 342
+quotes across the 34 themes rather than 400. The floor of 12 per theme is
+unchanged and holds with three themes exactly at it.
+
+**Near-duplicate detection in the validator** (section 7). Unique text after
+normalization proved too weak: seven pairs shipped carrying the same line with one
+word of difference, one of them a corrupted Pólya maxim. The validator now also
+fails a pair when at least 90% of the shorter quote's words appear in the longer
+one, both being at least 6 words. It reads the trimmed `source` for the length and
+vagueness checks, and rejects a repeated tag inside one `themes` array.
+
+**Pool size** (section 5). Ranking is deterministic once the shuffle is gone, so
+`DEFAULT_CACHE_SIZE` is the whole set a stable topic can reach. At 15 a philosophy
+topic drew 15 of the 26 quotes tagged philosophy over 120 draws and never the
+rest. It is now 30, the cap `Store.quotes.setCache` already applied, which covers
+the largest theme in the bank. A topic whose combined themes tag more than 30
+quotes still ends at 30.

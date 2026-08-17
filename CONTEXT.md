@@ -13,15 +13,22 @@ owner of the `chrome.storage.local` namespace.
 - **Matched Themes** — the intersection of the user's combined themes and a quote's
   themes; drives the on-screen recommendation reason.
 - **Conversation Themes vs. History Themes** — two independently extracted theme sets
-  (from scraped AI chats vs. browser history), unioned into **combined themes** before
-  quote matching. `Store.themes.getExtracted()` / `Store.themes.getHistoryThemes()`.
+  (from scraped AI chats vs. browser history), merged into **combined themes** before
+  quote matching. Each set is scaled against its own top score, then weighted: 1.0 for
+  conversation themes, 0.5 for history themes, so history can lift a theme but never
+  outrank the leading conversation theme. Scores sum by theme name.
+  `Store.themes.getExtracted()` / `Store.themes.getHistoryThemes()`, merged by
+  `combineThemes` (`background.js`).
 - **Blocked Themes** ("less like this") — user-excluded themes, filtered out of both
   theme extraction and quote selection. `Store.themes.block/unblock/blocked`.
 
 ## Recommendation
 
-- **Recommendation Reason** — the explanation shown under a quote: a static
-  `THEME_REASONS` lookup (newtab) or an AI-generated one.
+- **Recommendation Reason** — the explanation shown under a quote. The background
+  worker sends `reason: {theme, terms, origin}`, naming the theme that drove the pick
+  and the words that theme matched; newtab renders it from the `THEME_REASONS` copy
+  table plus up to two of those words, and renders nothing when `origin` is
+  `fallback`. An AI-generated reason replaces it when Smart Reasons are on.
 - **Smart Reasons (BYOK)** — optional AI-generated reasons using the user's own API
   key (Groq / Claude / OpenAI). `lib/ai-reason-generator.js`, settings in `Store.ai`.
 - **Cached Quotes** — the rotating pool (max 30) refreshed from theme matches,
