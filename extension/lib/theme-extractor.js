@@ -89,11 +89,12 @@ const THEME_KEYWORDS = {
   health: {
     // "mental" was removed for "mental model", and "rest" for "restart",
     // "restore" and "the rest of the file". "mental health" still hits "health".
-    // "balance" keeps "balancing" and "balanced", which the health sense needs,
-    // and SUPPRESSED_FORMS holds off "balancer". "load balancing" and "a
-    // balanced tree" stay reachable: that list is open, not closed.
+    // The stem "balanc" reaches "balancing", which "balance" cannot: the word
+    // drops its "e". SUPPRESSED_FORMS holds off "balancer", and "load balancing"
+    // stays reachable, which is inert on its own because a single weak hit
+    // cannot pass the gate.
     strong: ["health", "sleep", "exercise", "wellness", "tired", "burnout", "meditat"],
-    weak: ["energy", "balance"]
+    weak: ["energy", "balanc"]
   },
   finance: {
     strong: ["money", "finance", "budget", "price", "expensive", "afford", "income", "salary"],
