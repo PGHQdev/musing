@@ -335,7 +335,6 @@ const THEME_PATTERNS = Object.entries(THEME_KEYWORDS).map(([theme, tiers]) => {
     return {
       keyword,
       strong,
-      exact,
       regex: new RegExp(`\\b${escapeRegExp(keyword)}${exact ? "\\b" : "\\w*"}`, "g"),
     };
   };

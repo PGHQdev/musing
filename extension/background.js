@@ -777,11 +777,10 @@ async function getQuoteForDisplay() {
 
   // A fallback pick earned no reason; sending one would imply causation
   const driver = picked.score > 0 ? contributions[0] : null;
-  const origin = driver ? "matched" : "fallback";
   const reason = {
     theme: driver ? driver.name : null,
     terms: driver ? (driver.entry.terms || []).slice(0, MAX_REASON_TERMS) : [],
-    origin,
+    origin: driver ? "matched" : "fallback",
   };
 
   // Try to generate AI reason if enabled
@@ -799,7 +798,6 @@ async function getQuoteForDisplay() {
   return {
     ...quote,
     matchedThemes: matchedThemes.length > 0 ? matchedThemes : null,
-    origin,
     reason,
     aiReason: aiReason,
   };

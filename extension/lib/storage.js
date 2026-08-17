@@ -394,11 +394,6 @@ const Store = (() => {
     setHistoryThemes(data) {
       return write({ [K.HISTORY_THEMES]: data });
     },
-    // Called when browser history is turned off; getHistoryThemes then reports
-    // an empty theme list, so nothing stale reaches matching
-    clearHistoryThemes() {
-      return write({ [K.HISTORY_THEMES]: {} });
-    },
   };
 
   const history = {

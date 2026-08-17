@@ -96,13 +96,15 @@
     // Add more versions as needed
   };
 
-  // Local fallback quotes (used when service worker is unavailable)
+  // Local fallback quotes (used when service worker is unavailable). Every
+  // line here is carried by data/quotes.json, so this list holds the same
+  // sourced attributions the bank does.
   const LOCAL_FALLBACKS = [
-    { text: "The journey of a thousand miles begins with a single step.", author: "Lao Tzu" },
-    { text: "To begin, begin.", author: "William Wordsworth" },
-    { text: "The only true wisdom is in knowing you know nothing.", author: "Socrates" },
-    { text: "In the middle of difficulty lies opportunity.", author: "Albert Einstein" },
-    { text: "The mind is everything. What you think you become.", author: "Buddha" },
+    { text: "The unexamined life is not worth living.", author: "Socrates" },
+    { text: "All men by nature desire to know.", author: "Aristotle" },
+    { text: "Time is what we want most, but what we use worst.", author: "William Penn" },
+    { text: "It is hard to fail, but it is worse never to have tried to succeed.", author: "Theodore Roosevelt" },
+    { text: "Chance favors the prepared mind.", author: "Louis Pasteur" },
   ];
 
   /**
@@ -445,7 +447,6 @@
         themes: quote.themes || [],
         matchedThemes: quote.matchedThemes || null,
         aiReason: quote.aiReason || null,
-        origin: quote.origin || null,
         reason: quote.reason || null,
       },
     });
