@@ -34,10 +34,10 @@ const THEME_KEYWORDS = {
   },
   algorithms: {
     // "sort" and "search" were removed: "sort of" is a hedge and "search the logs"
-    // is not an algorithm. "big o" and "graph" are exact, so "big one" and
-    // "graphql" no longer count.
+    // is not an algorithm. "big o", "graph" and "graphs" are exact, so "big one"
+    // and "graphql" no longer count.
     strong: ["algorithm", "data structure", "hash", "recursion", "dynamic programming"],
-    weak: ["complexity", "tree", "graph", "optimization", "big o"]
+    weak: ["complexity", "tree", "graph", "graphs", "optimization", "big o"]
   },
 
   // Learning & Growth
@@ -142,9 +142,10 @@ const THEME_KEYWORDS = {
   creativity: {
     // "design" was removed for api design, "create" for "create a table",
     // "unique" for a unique index, "original" for "the original version".
-    // "idea" and "art" are exact, so "ideally" and "artifact" no longer count.
+    // "idea", "ideas" and "art" are exact, so "ideally" and "artifact" no
+    // longer count.
     strong: ["creativ", "brainstorm", "innovate", "imagine", "inventive"],
-    weak: ["idea", "art"]
+    weak: ["idea", "ideas", "art"]
   },
 
   // Decision Making
@@ -193,19 +194,24 @@ const THEME_KEYWORDS = {
   // Change
   change: {
     // "different" and "new" were removed: both are generic comparisons that
-    // attach to any noun, and "change" and "update" carry the sense
-    strong: ["adapt", "transition", "transform", "evolve"],
-    weak: ["change", "adjust", "shift", "update"]
+    // attach to any noun, and "change" and "update" carry the sense.
+    // The theme has no strong tier: "adapt" is an adapter, "transition" is a
+    // CSS property, "transform" is a transformer, and one strong keyword fires
+    // a theme alone. As weak keywords they keep every on-theme inflection and
+    // need a second distinct word before the theme survives.
+    strong: [],
+    weak: ["adapt", "transition", "transform", "evolve", "change", "adjust", "shift", "update"]
   },
 
   // Philosophy
   philosophy: {
     // "moral" is weak because the widened pattern also matches "morale".
     // "value" was removed for a variable, "truth" for "truthy" and "source of
-    // truth", "purpose" for "the purpose of this function". "exist" and "life"
-    // are exact, so "existing" and "lifecycle" no longer count.
+    // truth", "purpose" for "the purpose of this function". "existence" and
+    // "existential" replace "exist", which widened into "existing" and "exists".
+    // "life" is exact, so "lifecycle" no longer counts.
     strong: ["death", "consciousness", "ethics"],
-    weak: ["meaning", "exist", "life", "reality", "moral"]
+    weak: ["meaning", "existence", "existential", "life", "reality", "moral"]
   },
 
   // Courage & Fear
@@ -225,12 +231,13 @@ function escapeRegExp(str) {
 
 // Words whose bare form is on-theme and whose widened forms are not
 // ("work" -> "workflow", "time" -> "timeline", "change" -> "changelog",
-// "life" -> "lifecycle", "exist" -> "existing", "balance" -> "balancer",
-// "essential" -> "essentially", "idea" -> "ideally", "art" -> "artifact",
-// "graph" -> "graphql", "big o" -> "big one")
+// "life" -> "lifecycle", "balance" -> "balancer", "essential" -> "essentially",
+// "idea" -> "ideally", "art" -> "artifact", "graph" -> "graphql",
+// "big o" -> "big one"). A plural that the singular can no longer reach is
+// listed beside it: "ideas", "graphs".
 const EXACT_MATCH_KEYWORDS = new Set([
-  "work", "time", "change", "life", "exist", "balance", "essential",
-  "idea", "art", "graph", "big o"
+  "work", "time", "change", "life", "balance", "essential",
+  "idea", "ideas", "art", "graph", "graphs", "big o"
 ]);
 
 // Widened forms that invert the meaning of their keyword. "fearless" is a courage
