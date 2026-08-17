@@ -405,21 +405,24 @@ async function processHistoryThemes() {
     // Extract themes from history using the history-extractor module
     const result = await extractHistoryThemes(settings);
 
-    if (result.themes && result.themes.length > 0) {
-      await Store.themes.setHistoryThemes({
-        themes: result.themes,
-        extractedAt: Date.now(),
-        sourceCount: result.sourceCount,
-        titleCount: result.titleCount || 0,
-      });
+    // An empty extraction is a result too. Skipping the write leaves themes
+    // from an older browsing window driving the cache key and the ranking, so
+    // it is stored like any other outcome.
+    const themes = Array.isArray(result.themes) ? result.themes : [];
 
-      console.log("[Musing] History themes extracted:", result.themes.length, "themes from", result.sourceCount, "sources");
+    await Store.themes.setHistoryThemes({
+      themes,
+      extractedAt: Date.now(),
+      sourceCount: result.sourceCount,
+      titleCount: result.titleCount || 0,
+    });
 
-      // Refresh quote cache with combined themes
-      await refreshQuoteCacheWithHistoryThemes();
-    }
+    console.log("[Musing] History themes extracted:", themes.length, "themes from", result.sourceCount, "sources");
 
-    return { success: true, themes: result.themes, sourceCount: result.sourceCount };
+    // Refresh quote cache with combined themes
+    await refreshQuoteCacheWithHistoryThemes();
+
+    return { success: true, themes, sourceCount: result.sourceCount };
   } catch (error) {
     console.error("[Musing] History processing failed:", error);
     return { success: false, error: error.message };
