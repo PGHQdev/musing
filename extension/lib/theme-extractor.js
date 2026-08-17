@@ -70,8 +70,9 @@ const THEME_KEYWORDS = {
     weak: ["cool", "love", "great", "worked", "success", "yes", "perfect"]
   },
   anxiety: {
-    strong: ["worr", "anxious", "stress", "nervous", "panic", "overwhelm"],
-    weak: ["afraid", "fear", "deadline", "pressure", "uncertain"]
+    // "panic" is weak because a kernel panic is not one
+    strong: ["worr", "anxious", "stress", "nervous", "overwhelm"],
+    weak: ["afraid", "fear", "deadline", "pressure", "uncertain", "panic"]
   },
 
   // Life
@@ -89,12 +90,14 @@ const THEME_KEYWORDS = {
   health: {
     // "mental" was removed for "mental model", and "rest" for "restart",
     // "restore" and "the rest of the file". "mental health" still hits "health".
-    // The stem "balanc" reaches "balancing", which "balance" cannot: the word
-    // drops its "e". SUPPRESSED_FORMS holds off "balancer", and "load balancing"
-    // stays reachable, which is inert on its own because a single weak hit
-    // cannot pass the gate.
-    strong: ["health", "sleep", "exercise", "wellness", "tired", "burnout", "meditat"],
-    weak: ["energy", "balanc"]
+    // "balance" cannot reach "balancing", since the word drops its "e", and the
+    // "balanc" stem that reaches it also hands "load balancing" to the theme.
+    // Measured as an even trade, so the engineering false fire decides it: this
+    // extension reads conversations about code. SUPPRESSED_FORMS holds off
+    // "balancer"; "balanced" stays reachable in both senses and is irreducible.
+    // "health" is weak because every service has a health check
+    strong: ["sleep", "exercise", "wellness", "tired", "burnout", "meditat"],
+    weak: ["energy", "balance", "health"]
   },
   finance: {
     strong: ["money", "finance", "budget", "price", "expensive", "afford", "income", "salary"],
@@ -103,20 +106,24 @@ const THEME_KEYWORDS = {
 
   // Abstract
   persistence: {
-    strong: ["persist", "persever", "keep going", "don't give up", "endure", "resilient", "dedication"],
-    weak: ["continue", "determined", "committed"]
+    // "resilient" is weak because a service is resilient to a zone failure
+    strong: ["persist", "persever", "keep going", "don't give up", "endure", "dedication"],
+    weak: ["continue", "determined", "committed", "resilient"]
   },
   patience: {
-    // "slow" was removed: a slow query is a performance report, not patience
-    strong: ["patient", "patience", "gradual", "calm", "steady"],
-    weak: ["wait", "time", "eventually", "pace"]
+    // "slow" was removed: a slow query is a performance report, not patience.
+    // "steady" and "gradual" are weak because a queue reaches a steady state and
+    // a rollout is gradual
+    strong: ["patient", "patience", "calm"],
+    weak: ["wait", "time", "eventually", "pace", "steady", "gradual"]
   },
   simplicity: {
     // "clear" was removed for "clear the cache", "basic" for "basically" and
     // "basic auth", "reduce" for "reducer". "essential" keeps its plural while
-    // SUPPRESSED_FORMS holds off "essentially".
-    strong: ["simple", "simplify", "minimal", "elegant", "straightforward"],
-    weak: ["clean", "essential"]
+    // SUPPRESSED_FORMS holds off "essentially". "minimal" is weak because every
+    // bug report asks for a minimal repro.
+    strong: ["simple", "simplify", "elegant", "straightforward"],
+    weak: ["clean", "essential", "minimal"]
   },
   complexity: {
     strong: ["complex", "complicated", "intricate", "nuance", "sophisticated"],
@@ -161,8 +168,9 @@ const THEME_KEYWORDS = {
     weak: ["option", "alternative", "evaluate", "assess", "weigh"]
   },
   uncertainty: {
-    strong: ["uncertain", "unsure", "doubt", "unknown", "unclear", "ambiguous", "unpredictable"],
-    weak: ["maybe", "perhaps", "risk"]
+    // "unknown" is weak because parsers hit unknown tokens and hosts
+    strong: ["uncertain", "unsure", "doubt", "unclear", "ambiguous", "unpredictable"],
+    weak: ["maybe", "perhaps", "risk", "unknown"]
   },
 
   // Problem Solving
@@ -194,8 +202,10 @@ const THEME_KEYWORDS = {
 
   // Communication
   communication: {
-    strong: ["communicat", "clarify", "conversation", "feedback", "listen"],
-    weak: ["explain", "discuss", "talk", "understand", "express"]
+    // "listen" and "feedback" are weak because a server listens on a port and a
+    // feedback loop stabilizes a controller
+    strong: ["communicat", "clarify", "conversation"],
+    weak: ["explain", "discuss", "talk", "understand", "express", "listen", "feedback"]
   },
 
   // Change
@@ -229,8 +239,9 @@ const THEME_KEYWORDS = {
 
   // Courage & Fear
   courage: {
-    strong: ["courage", "brave", "fearless", "dare", "stand up"],
-    weak: ["bold", "confident", "risk", "venture"]
+    // "stand up" is weak because you stand up a cluster
+    strong: ["courage", "brave", "fearless", "dare"],
+    weak: ["bold", "confident", "risk", "venture", "stand up"]
   },
   fear: {
     strong: ["fear", "afraid", "scared", "dread", "phobia"],
@@ -302,10 +313,10 @@ const MIN_DISTINCT_WEAK = 2;
 // floor stops a seven-word theme outscoring a twenty-word one on one hit.
 const MIN_DENOMINATOR = 12;
 // A theme survives only within this fraction of the top score.
-// scripts/theme-fixtures.json passes 23 of 23 across (0.3667, 0.4444], so there is
-// 0.033 of headroom below and 0.044 above. The band is pinned by "relationships"
+// scripts/theme-fixtures.json passes 23 of 23 across (0.3667, 0.5128], so there is
+// 0.033 of headroom below and 0.113 above. The band is pinned by "relationships"
 // at ratio 0.3667 in the day-rate fixture, which must be cut, and "communication"
-// at 0.4444 in the two-diagrams fixture, which must survive. Changing a keyword
+// at 0.5128 in the two-diagrams fixture, which must survive. Changing a keyword
 // moves those pins; re-run scripts/validate-themes.js.
 const RELATIVE_CUTOFF = 0.4;
 // Reason-line limits: how many terms per theme and how long each may be
