@@ -32,6 +32,7 @@ const Store = (() => {
     LAST_SEEN_VERSION: "last_seen_version",
     HISTORY_SETTINGS: "history_settings",
     QUOTES: "cached_quotes",
+    QUOTES_THEME_KEY: "cached_quotes_theme_key",
     DAILY_QUOTE: "daily_quote_state",
     FAVORITES: "favorite_quotes",
     BLOCKED_THEMES: "blocked_themes",
@@ -254,6 +255,14 @@ const Store = (() => {
     setDailyState(state) {
       return write({ [K.DAILY_QUOTE]: state });
     },
+    // The sorted, joined theme-name key the cache was last built from.
+    // Task 4 rebuilds vs. merges the cache by comparing against this.
+    getThemeKey() {
+      return read(K.QUOTES_THEME_KEY, "");
+    },
+    setThemeKey(key) {
+      return write({ [K.QUOTES_THEME_KEY]: key });
+    },
   };
 
   const favorites = {
@@ -298,6 +307,28 @@ const Store = (() => {
     },
   };
 
+  // Installed browsers hold extracted/history themes as plain strings from
+  // before scored extraction shipped. Normalize on read so every reader sees
+  // {theme, score, terms} regardless of when the entry was written, with no
+  // migration or storage reset.
+  function normalizeThemeEntry(entry) {
+    if (typeof entry === "string") {
+      return { theme: entry, score: 1, terms: [] };
+    }
+    if (entry && typeof entry === "object" && typeof entry.theme === "string") {
+      return {
+        ...entry,
+        score: typeof entry.score === "number" ? entry.score : 1,
+        terms: Array.isArray(entry.terms) ? entry.terms : [],
+      };
+    }
+    return null;
+  }
+
+  function normalizeThemeList(list) {
+    return (Array.isArray(list) ? list : []).map(normalizeThemeEntry).filter(Boolean);
+  }
+
   const themes = {
     async blocked() {
       const list = await readArray(K.BLOCKED_THEMES);
@@ -327,14 +358,16 @@ const Store = (() => {
     clearBlocked() {
       return serialize(() => write({ [K.BLOCKED_THEMES]: [] }));
     },
-    getExtracted() {
-      return readArray(K.EXTRACTED_THEMES);
+    async getExtracted() {
+      const raw = await readArray(K.EXTRACTED_THEMES);
+      return normalizeThemeList(raw);
     },
     setExtracted(list) {
       return write({ [K.EXTRACTED_THEMES]: list });
     },
-    getHistoryThemes() {
-      return read(K.HISTORY_THEMES, {});
+    async getHistoryThemes() {
+      const raw = await read(K.HISTORY_THEMES, {});
+      return { ...raw, themes: normalizeThemeList(raw.themes) };
     },
     setHistoryThemes(data) {
       return write({ [K.HISTORY_THEMES]: data });
@@ -514,7 +547,7 @@ const Store = (() => {
   function clearCapturedData() {
     // Serialized so a concurrent conversations.add / appendLog cannot write the
     // just-cleared data back after the remove lands.
-    return serialize(() => backend().remove([K.SCRAPE_LOG, K.CONVERSATIONS, K.QUOTES]));
+    return serialize(() => backend().remove([K.SCRAPE_LOG, K.CONVERSATIONS, K.QUOTES, K.QUOTES_THEME_KEY]));
   }
 
   /** Raw dump of the whole storage area (popup debug view). */
