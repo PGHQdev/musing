@@ -139,8 +139,9 @@ const THEME_KEYWORDS = {
 
   // Work & Productivity
   productivity: {
-    strong: ["productive", "productivity", "distract", "procrastinat", "todo", "priorit", "time management"],
-    weak: ["efficient", "focus", "task", "organize"]
+    // "todo" is weak because every repository is full of TODO comments
+    strong: ["productive", "productivity", "distract", "procrastinat", "priorit", "time management"],
+    weak: ["efficient", "focus", "task", "organize", "todo"]
   },
   motivation: {
     // "aspir" is weak because the widened pattern also matches "aspirin", "aspirate"
@@ -168,9 +169,10 @@ const THEME_KEYWORDS = {
     weak: ["option", "alternative", "evaluate", "assess", "weigh"]
   },
   uncertainty: {
-    // "unknown" is weak because parsers hit unknown tokens and hosts
-    strong: ["uncertain", "unsure", "doubt", "unclear", "ambiguous", "unpredictable"],
-    weak: ["maybe", "perhaps", "risk", "unknown"]
+    // "unknown" is weak because parsers hit unknown tokens and hosts, and
+    // "ambiguous" because compilers reject ambiguous calls and grammars
+    strong: ["uncertain", "unsure", "doubt", "unclear", "unpredictable"],
+    weak: ["maybe", "perhaps", "risk", "unknown", "ambiguous"]
   },
 
   // Problem Solving
