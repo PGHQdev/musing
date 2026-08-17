@@ -107,13 +107,18 @@ function sanitizeHistoryText(text) {
   return sanitized.trim();
 }
 
+// History is the weaker signal, so it carries at most 5 themes
+const MAX_HISTORY_THEMES = 5;
+
 /**
  * Extract themes from browser history
  * @param {Object} settings - History settings
  * @param {boolean} settings.enableBrowserHistory - Extract from page titles
  * @param {number} settings.historyDaysBack - Days of history to analyze
  * @param {string[]} settings.excludedDomains - Additional domains to exclude
- * @returns {Promise<{themes: string[], sourceCount: number}>}
+ * @returns {Promise<{themes: {theme: string, score: number, terms: string[]}[],
+ *   sourceCount: number, titleCount: number}>} At most MAX_HISTORY_THEMES
+ *   scored themes, descending
  */
 async function extractHistoryThemes(settings) {
   const {
@@ -183,8 +188,7 @@ async function extractHistoryThemes(settings) {
   // Use the theme extractor; raw keywords are not theme names, so no fallback
   let themes = [];
   if (typeof extractThemes === "function") {
-    // Adapter: task 4 replaces this with real scored-theme handling
-    themes = extractThemes(combinedText, 5).map((t) => t.theme);
+    themes = extractThemes(combinedText, MAX_HISTORY_THEMES);
   } else {
     console.warn("[Musing] extractThemes unavailable; skipping history themes");
   }

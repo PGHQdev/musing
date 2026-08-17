@@ -237,8 +237,18 @@ const Store = (() => {
       const raw = await read(K.HISTORY_SETTINGS, {});
       return { ...HISTORY_SETTINGS_DEFAULTS, ...raw };
     },
+    // Turning browser history off drops the themes it produced. Without this,
+    // themes from a past browsing window keep feeding the quote cache key and
+    // the ranking for as long as the profile lives.
     set(value) {
-      return write({ [K.HISTORY_SETTINGS]: value });
+      return serialize(async () => {
+        const previous = await read(K.HISTORY_SETTINGS, {});
+        const wasEnabled = { ...HISTORY_SETTINGS_DEFAULTS, ...previous }.enableBrowserHistory;
+        await write({ [K.HISTORY_SETTINGS]: value });
+        if (wasEnabled && !value?.enableBrowserHistory) {
+          await themes.clearHistoryThemes();
+        }
+      });
     },
   };
 
@@ -371,6 +381,11 @@ const Store = (() => {
     },
     setHistoryThemes(data) {
       return write({ [K.HISTORY_THEMES]: data });
+    },
+    // Called when browser history is turned off; getHistoryThemes then reports
+    // an empty theme list, so nothing stale reaches matching
+    clearHistoryThemes() {
+      return write({ [K.HISTORY_THEMES]: {} });
     },
   };
 

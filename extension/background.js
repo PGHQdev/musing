@@ -72,8 +72,15 @@ function buildThemeKey(themes) {
 
 /**
  * Merge conversation themes and history themes into one scored list.
- * Scores are weighted per source and summed by theme name, so a theme the
- * user both discussed and browsed outranks a theme from either source alone.
+ *
+ * Each source is scaled against its own top score before the source weight is
+ * applied. Extractor scores are ratios whose size depends on the keyword list
+ * behind the theme, so two independently extracted sets are not comparable as
+ * they stand, and a legacy stored list normalizes to a flat score of 1. After
+ * scaling, the top conversation theme sits at 1.0 and the top history theme at
+ * 0.5, so history can lift a theme but never outrank the leading conversation
+ * theme. Scores sum by theme name, so a theme in both sources outranks the
+ * same theme from either source alone.
  * @param {Array} conversationThemes
  * @param {Array} historyThemes
  * @returns {{theme: string, score: number, terms: string[]}[]} Descending
@@ -82,19 +89,27 @@ function combineThemes(conversationThemes, historyThemes) {
   const merged = new Map();
 
   const absorb = (entries, weight) => {
-    for (const entry of Array.isArray(entries) ? entries : []) {
-      const name = themeNameOf(entry).toLowerCase();
-      if (!name) continue;
-      const score = (typeof entry?.score === "number" ? entry.score : 1) * weight;
-      const terms = Array.isArray(entry?.terms) ? entry.terms : [];
-      const existing = merged.get(name);
+    const list = (Array.isArray(entries) ? entries : [])
+      .map((entry) => ({
+        name: themeNameOf(entry).toLowerCase(),
+        score: typeof entry?.score === "number" ? entry.score : 1,
+        terms: Array.isArray(entry?.terms) ? entry.terms : [],
+      }))
+      .filter((entry) => entry.name);
+
+    const top = list.reduce((max, entry) => Math.max(max, entry.score), 0);
+    const scale = top > 0 ? weight / top : weight;
+
+    for (const entry of list) {
+      const score = entry.score * scale;
+      const existing = merged.get(entry.name);
       if (existing) {
         existing.score += score;
-        for (const term of terms) {
+        for (const term of entry.terms) {
           if (!existing.terms.includes(term)) existing.terms.push(term);
         }
       } else {
-        merged.set(name, { theme: name, score, terms: [...terms] });
+        merged.set(entry.name, { theme: entry.name, score, terms: [...entry.terms] });
       }
     }
   };
