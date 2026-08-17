@@ -114,7 +114,7 @@ distinctStrong = strong keywords with >= 1 match
 distinctWeak   = weak keywords with >= 1 match
 reject theme unless distinctStrong >= 1 or distinctWeak >= 2
 raw   = 2*distinctStrong + distinctWeak
-score = raw / (2*strongCount + weakCount)
+score = raw / max(2*strongCount + weakCount, 12)
 keep themes with score >= 0.4 * topScore, capped at maxThemes
 ```
 
@@ -131,9 +131,10 @@ matches "stack traces".
 
 Term rules:
 
-- `EXACT_MATCH_KEYWORDS` ("work", "time", "change") keep their `\b` suffix and
-  record the keyword unchanged. Widening would break the guard that stops
-  "work" matching "workflow".
+- `EXACT_MATCH_KEYWORDS` ("work", "time", "change", "life", "art", "big o") keep
+  their `\b` suffix and record the keyword unchanged. Widening would break the
+  guard that stops "work" matching "workflow". Task 6 added the last three and
+  paired them with `SUPPRESSED_FORMS`; see the amendment note below.
 - Keep up to 3 distinct terms per theme, strong tier first, then by hit count.
 - Lowercase, deduplicated, at most 24 characters, letters plus spaces and hyphens
   only. Anything else is dropped.
@@ -265,3 +266,28 @@ stages 2 through 5.
   honestly.
 - Cache rebuild on theme change increases write volume on `chrome.storage.local`.
   The cap of 30 quotes bounds it.
+
+## 11. Amended during implementation
+
+Two decisions in section 3 changed while Task 6 was implemented. The rest of this
+document is the design as approved.
+
+**The denominator floor** (`score = raw / max(2*strongCount + weakCount, 12)`).
+This reverses Task 2, which dropped a floor after measuring the smallest
+denominator across all 34 themes at exactly 12, making `max(denom, 12)` a no-op.
+Task 6 removed 25 weak keywords and demoted five strong ones, taking `growth` to
+7 and `change` to 8, and Task 2's own pruning had already taken `time` to 9. Score
+is a fraction of a theme's own vocabulary, so a shorter list makes each surviving
+hit worth more, and `growth` reached 0.571 on project-management wording — twice
+what the same evidence scored before the keywords were cleaned up. A theme should
+not gain confidence by losing keywords. The floor binds on 3 of 34 themes and
+leaves the other 31 untouched, and it moves neither the relative-cutoff band,
+still (0.3667, 0.4444], nor either pin.
+
+**`SUPPRESSED_FORMS`**, an extension of Task 2's `INVERTED_FORMS`. Widening a
+keyword to `\b{keyword}\w*` also claims words that merely start the same way:
+"exist" claimed "existing", "listen" claimed "listener", "react" claimed
+"reaction". Exact match cures that by throwing away every honest inflection,
+including the plural, so it is now reserved for keywords whose widened set is
+mostly noise. Everything else keeps widening and names its false forms, which
+`matchKeyword` skips unless the keyword is one of them.

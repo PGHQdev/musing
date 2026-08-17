@@ -89,6 +89,9 @@ const THEME_KEYWORDS = {
   health: {
     // "mental" was removed for "mental model", and "rest" for "restart",
     // "restore" and "the rest of the file". "mental health" still hits "health".
+    // "balance" keeps "balancing" and "balanced", which the health sense needs,
+    // and SUPPRESSED_FORMS holds off "balancer". "load balancing" and "a
+    // balanced tree" stay reachable: that list is open, not closed.
     strong: ["health", "sleep", "exercise", "wellness", "tired", "burnout", "meditat"],
     weak: ["energy", "balance"]
   },
@@ -109,8 +112,8 @@ const THEME_KEYWORDS = {
   },
   simplicity: {
     // "clear" was removed for "clear the cache", "basic" for "basically" and
-    // "basic auth", "reduce" for "reducer". "essential" is exact, so
-    // "essentially" no longer counts.
+    // "basic auth", "reduce" for "reducer". "essential" keeps its plural while
+    // SUPPRESSED_FORMS holds off "essentially".
     strong: ["simple", "simplify", "minimal", "elegant", "straightforward"],
     weak: ["clean", "essential"]
   },
@@ -215,11 +218,12 @@ const THEME_KEYWORDS = {
   philosophy: {
     // "moral" is weak because the widened pattern also matches "morale".
     // "value" was removed for a variable, "truth" for "truthy" and "source of
-    // truth", "purpose" for "the purpose of this function". "existence" and
-    // "existential" replace "exist", which widened into "existing" and "exists".
-    // "life" is exact, so "lifecycle" no longer counts.
+    // truth", "purpose" for "the purpose of this function". The stem "existen"
+    // replaces "exist", which widened into "existing" and "exists": it covers
+    // existence and existential without reaching either. "life" is exact, so
+    // "lifecycle" no longer counts.
     strong: ["death", "consciousness", "ethics"],
-    weak: ["meaning", "existence", "existential", "life", "reality", "moral"]
+    weak: ["meaning", "existen", "life", "reality", "moral"]
   },
 
   // Courage & Fear
@@ -239,13 +243,12 @@ function escapeRegExp(str) {
 
 // Words whose bare form is on-theme and whose widened set is mostly noise, so
 // no short list of forms could clean it up ("work" -> "workflow", "time" ->
-// "timeline", "life" -> "lifecycle", "balance" -> "balancer", "essential" ->
-// "essentially", "art" -> "artifact" and 250 other art* words, "big o" ->
-// "big one"). Where the false forms are a short closed list, suppress them in
-// SUPPRESSED_FORMS instead and keep the widening: exact match also throws away
-// every honest inflection, including the plural.
+// "timeline", "life" -> "lifecycle", "art" -> "artifact" and 250 other art*
+// words, "big o" -> "big one"). Where the false forms are a short closed list,
+// suppress them in SUPPRESSED_FORMS instead and keep the widening: exact match
+// also throws away every honest inflection, including the plural.
 const EXACT_MATCH_KEYWORDS = new Set([
-  "work", "time", "change", "life", "balance", "essential", "art", "big o"
+  "work", "time", "change", "life", "art", "big o"
 ]);
 
 // Widened forms a keyword should not claim, either because they invert its
@@ -264,15 +267,30 @@ const SUPPRESSED_FORMS = new Set([
   "idealizing", "idealization",
   // algorithms' "graph" is not a graphic
   "graphql", "graphic", "graphics", "graphical", "graphically", "graphite",
-  // programming's "react" is not a reaction, and a strong keyword fires alone,
-  // so without this "her reaction to the news" reads as a programming question
-  "reaction", "reactions", "reacted", "reacting", "reactionary",
-  // debugging's "exception" is not an exceptional year
+  // programming's "react" is not a reaction or a nuclear reactor, and a strong
+  // keyword fires alone, so without this "her reaction to the news" reads as a
+  // programming question. "reactive" stays: reactive programming is the theme.
+  "reaction", "reactions", "reacted", "reacting", "reactionary", "reactor", "reactors",
+  // debugging's "exception" is not an exceptional year, and its "console" does
+  // not console anyone. "consoles" stays: the plural noun is the common one.
   "exceptional", "exceptionally", "exceptionable", "exceptionality", "exceptionalness",
+  "consoled", "consoler", "consolers", "consolement",
   // communication's "listen" is not an event listener
   "listener", "listeners",
-  // writing's "writ" is not a writable directory
-  "writable", "writeable", "writability"
+  // writing's "writ" is not a writable directory, and nobody writhing is writing
+  "writable", "writeable", "writability", "writhe", "writhed", "writhes", "writhing",
+  // algorithms' "hash" is not a hashtag
+  "hashtag", "hashtags",
+  // time's "schedule" is not a scheduler
+  "scheduler", "schedulers",
+  // career's "resume" is a document; a resumed upload is not one. The bare word
+  // and its plural stay, since both senses share them.
+  "resumed",
+  // simplicity's "essential" is not "essentially"
+  "essentially", "essentialism", "essentialist", "essentialists", "essentiality",
+  "essentialize", "essentialness",
+  // health's "balance" is not a load balancer
+  "balancer", "balancers", "balanceable", "balancedness", "balancement"
 ]);
 
 // A theme survives only with one strong keyword or two distinct weak ones
@@ -283,7 +301,7 @@ const MIN_DISTINCT_WEAK = 2;
 // floor stops a seven-word theme outscoring a twenty-word one on one hit.
 const MIN_DENOMINATOR = 12;
 // A theme survives only within this fraction of the top score.
-// scripts/theme-fixtures.json passes 20 of 20 across (0.3667, 0.4444], so there is
+// scripts/theme-fixtures.json passes 23 of 23 across (0.3667, 0.4444], so there is
 // 0.033 of headroom below and 0.044 above. The band is pinned by "relationships"
 // at ratio 0.3667 in the day-rate fixture, which must be cut, and "communication"
 // at 0.4444 in the two-diagrams fixture, which must survive. Changing a keyword
