@@ -18,6 +18,12 @@ const MIN_CACHE_SIZE = 5;
 const DEFAULT_CACHE_SIZE = 15;
 const MIN_PROCESS_INTERVAL_MS = 5 * 60 * 1000; // 5 minutes between processing
 
+// What the user is talking about now counts double what they browsed
+const CONVERSATION_THEME_WEIGHT = 1;
+const HISTORY_THEME_WEIGHT = 0.5;
+// Terms carried on the reason line
+const MAX_REASON_TERMS = 3;
+
 // Proactive scraping configuration
 const STALE_THRESHOLD_MS = 24 * 60 * 60 * 1000; // 24 hours
 const PROACTIVE_SCRAPE_TIMEOUT_MS = 60000; // Chrome's alarm minimum is 1 minute
@@ -26,9 +32,100 @@ const PROACTIVE_SCRAPE_TIMEOUT_MS = 60000; // Chrome's alarm minimum is 1 minute
 // Background scrape tabs are tracked in Store.scrape.tabs() (persisted),
 // so the timeout alarm and onRemoved cleanup survive worker suspension.
 
+/**
+ * Theme name of either shape a caller can hold: a scored `{theme, score,
+ * terms}` entry or a plain string from an older stored value.
+ * @returns {string} Empty string for any other shape
+ */
+function themeNameOf(entry) {
+  if (typeof entry === "string") return entry;
+  if (entry && typeof entry === "object" && typeof entry.theme === "string") return entry.theme;
+  return "";
+}
+
+/**
+ * Drop blocked themes, keeping each entry in the shape it arrived in.
+ * @param {Array} themes - `[{theme, score, terms}]` or `string[]`
+ * @param {Set<string>} blockedSet - Lowercased blocked theme names
+ */
 function filterBlockedThemes(themes, blockedSet) {
-  if (!themes || themes.length === 0) return [];
-  return themes.map((t) => String(t)).filter((t) => t && !blockedSet.has(t.toLowerCase()));
+  if (!Array.isArray(themes) || themes.length === 0) return [];
+  return themes.filter((entry) => {
+    const name = themeNameOf(entry);
+    return name && !blockedSet.has(name.toLowerCase());
+  });
+}
+
+/**
+ * Cache identity: the theme names the cache was built from, lowercased,
+ * sorted and joined. A different key means a different topic.
+ * @param {Array} themes - `[{theme, score, terms}]` or `string[]`
+ * @returns {string}
+ */
+function buildThemeKey(themes) {
+  return (Array.isArray(themes) ? themes : [])
+    .map((entry) => themeNameOf(entry).toLowerCase())
+    .filter(Boolean)
+    .sort()
+    .join("|");
+}
+
+/**
+ * Merge conversation themes and history themes into one scored list.
+ * Scores are weighted per source and summed by theme name, so a theme the
+ * user both discussed and browsed outranks a theme from either source alone.
+ * @param {Array} conversationThemes
+ * @param {Array} historyThemes
+ * @returns {{theme: string, score: number, terms: string[]}[]} Descending
+ */
+function combineThemes(conversationThemes, historyThemes) {
+  const merged = new Map();
+
+  const absorb = (entries, weight) => {
+    for (const entry of Array.isArray(entries) ? entries : []) {
+      const name = themeNameOf(entry).toLowerCase();
+      if (!name) continue;
+      const score = (typeof entry?.score === "number" ? entry.score : 1) * weight;
+      const terms = Array.isArray(entry?.terms) ? entry.terms : [];
+      const existing = merged.get(name);
+      if (existing) {
+        existing.score += score;
+        for (const term of terms) {
+          if (!existing.terms.includes(term)) existing.terms.push(term);
+        }
+      } else {
+        merged.set(name, { theme: name, score, terms: [...terms] });
+      }
+    }
+  };
+
+  absorb(conversationThemes, CONVERSATION_THEME_WEIGHT);
+  absorb(historyThemes, HISTORY_THEME_WEIGHT);
+
+  return [...merged.values()].sort((a, b) => b.score - a.score);
+}
+
+/**
+ * Sample one scored entry with probability proportional to score squared.
+ * Rank counts, and variety holds. When every candidate scores 0 the pick is
+ * uniform, which is the honest fallback: nothing earned its place.
+ * @param {{quote: Object, score: number}[]} scored
+ * @returns {{quote: Object, score: number}|null} Null for an empty list
+ */
+function weightedPick(scored) {
+  if (!Array.isArray(scored) || scored.length === 0) return null;
+
+  const weights = scored.map((entry) => (entry.score > 0 ? entry.score * entry.score : 0));
+  const total = weights.reduce((sum, w) => sum + w, 0);
+
+  if (total <= 0) return scored[Math.floor(Math.random() * scored.length)];
+
+  let threshold = Math.random() * total;
+  for (let i = 0; i < scored.length; i++) {
+    threshold -= weights[i];
+    if (threshold < 0) return scored[i];
+  }
+  return scored[scored.length - 1];
 }
 
 function quoteIsBlocked(quote, blockedSet) {
@@ -314,8 +411,8 @@ async function refreshQuoteCacheWithHistoryThemes() {
 
   const historyThemes = historyData.themes || [];
 
-  // Combine themes, prioritizing conversation themes
-  const combinedThemes = [...new Set([...conversationThemes, ...historyThemes])];
+  // Combine themes, weighting conversation themes above history themes
+  const combinedThemes = combineThemes(conversationThemes, historyThemes);
 
   // Refresh quote cache with combined themes
   await refreshLocalQuoteCache(combinedThemes);
@@ -522,19 +619,23 @@ async function processConversationsLocally() {
   const combinedText = conversations.join("\n\n");
 
   // Extract themes using local keyword matching
-  // Adapter: task 4 replaces this with real scored-theme handling
-  const themes = extractThemes(combinedText, 5).map((t) => t.theme);
+  const themes = extractThemes(combinedText, 5);
   const blockedSet = await Store.themes.blockedSet();
   const filteredThemes = filterBlockedThemes(themes, blockedSet);
 
-  console.log("[Musing] Extracted themes locally:", filteredThemes);
+  console.log(
+    "[Musing] Extracted themes locally:",
+    filteredThemes.map((t) => `${t.theme} ${t.score.toFixed(2)}`)
+  );
 
   // Store extracted themes
   await Store.themes.setExtracted(filteredThemes);
   await Store.conversations.markProcessed();
 
-  // Refresh quote cache based on new themes
-  await refreshLocalQuoteCache(filteredThemes);
+  // Refresh through the combined path, so the cache is keyed on the same theme
+  // set getQuoteForDisplay ranks with. Keying on conversation themes alone
+  // would flip the key on every history extraction and rebuild each time.
+  await refreshQuoteCacheWithHistoryThemes();
 }
 
 /**
@@ -544,23 +645,36 @@ async function processConversationsLocally() {
 async function refreshLocalQuoteCache(themes = []) {
   const blockedSet = await Store.themes.blockedSet();
   const filteredThemes = filterBlockedThemes(themes, blockedSet);
+  const themeKey = buildThemeKey(filteredThemes);
 
-  // Get quotes matching themes from local database (async)
+  // Ranked matches from the local database (async); the cache holds plain
+  // quote objects, so the scores are used for ordering only
   const matchingQuotes = await findQuotesByThemes(filteredThemes, DEFAULT_CACHE_SIZE);
-  const unblockedMatching = matchingQuotes.filter((q) => !quoteIsBlocked(q, blockedSet));
+  const unblockedMatching = matchingQuotes
+    .map((match) => match.quote)
+    .filter((q) => !quoteIsBlocked(q, blockedSet));
 
-  // Get existing cache, dropping quotes whose themes have since been blocked
-  const existing = await Store.quotes.getCache();
-  const keptExisting = existing.filter((q) => !quoteIsBlocked(q, blockedSet));
+  const previousKey = await Store.quotes.getThemeKey();
+  let nextCache;
 
-  // Merge new quotes with existing, avoiding duplicates; new themed quotes
-  // first, Store.quotes.setCache enforces the size cap
-  const existingIds = new Set(keptExisting.map((q) => q.id));
-  const newQuotes = unblockedMatching.filter((q) => !existingIds.has(q.id));
-  const merged = [...newQuotes, ...keptExisting];
+  if (previousKey !== themeKey) {
+    // Topic changed: rebuild from the ranked matches so a past topic stops
+    // feeding today's quotes
+    nextCache = unblockedMatching;
+    console.log("[Musing] Theme key changed, rebuilding cache:", previousKey, "->", themeKey);
+  } else {
+    // Same topic: keep the pool, dropping quotes whose themes have since been
+    // blocked; new themed quotes first, Store.quotes.setCache caps the size
+    const existing = await Store.quotes.getCache();
+    const keptExisting = existing.filter((q) => !quoteIsBlocked(q, blockedSet));
+    const existingIds = new Set(keptExisting.map((q) => q.id));
+    const newQuotes = unblockedMatching.filter((q) => !existingIds.has(q.id));
+    nextCache = [...newQuotes, ...keptExisting];
+  }
 
-  await Store.quotes.setCache(merged);
-  console.log("[Musing] Local cache updated, total quotes:", merged.length, "themes:", filteredThemes);
+  await Store.quotes.setCache(nextCache);
+  await Store.quotes.setThemeKey(themeKey);
+  console.log("[Musing] Local cache updated, total quotes:", nextCache.length, "themes:", themeKey);
 }
 
 /**
@@ -583,9 +697,9 @@ async function getQuoteForDisplay() {
       Store.themes.blockedSet(),
     ]);
 
-  // Combine conversation themes with history themes
+  // Combine conversation themes with history themes, then drop blocked ones
   const historyThemes = historyData.themes || [];
-  const combinedThemes = filterBlockedThemes([...new Set([...themes, ...historyThemes])], blockedSet);
+  const combinedThemes = filterBlockedThemes(combineThemes(themes, historyThemes), blockedSet);
 
   // Ensure quotes are loaded from JSON
   await ensureQuotesLoaded();
@@ -595,7 +709,7 @@ async function getQuoteForDisplay() {
 
   // If cache is low, refresh from local database with combined themes
   if (quotes.length < MIN_CACHE_SIZE) {
-    availableQuotes = await findQuotesByThemes(combinedThemes, DEFAULT_CACHE_SIZE);
+    availableQuotes = (await findQuotesByThemes(combinedThemes, DEFAULT_CACHE_SIZE)).map((m) => m.quote);
   }
 
   // Filter out recently shown quotes; Store owns the anti-repeat window size
@@ -604,21 +718,42 @@ async function getQuoteForDisplay() {
 
   // If all have been shown, reset and get fresh quotes
   if (available.length === 0) {
-    available = (await findQuotesByThemes(combinedThemes, DEFAULT_CACHE_SIZE)).filter((q) => !quoteIsBlocked(q, blockedSet));
+    available = (await findQuotesByThemes(combinedThemes, DEFAULT_CACHE_SIZE))
+      .map((m) => m.quote)
+      .filter((q) => !quoteIsBlocked(q, blockedSet));
     await Store.history.resetShownIds();
   }
 
-  // Pick random quote; can still be empty if quotes.json failed to load or
-  // every candidate is theme-blocked — newtab falls back on a null response
-  const quote = available[Math.floor(Math.random() * available.length)];
+  // Rank the survivors against the combined themes, then sample by score
+  // squared. Cache order is not trusted: it can hold quotes from a merge.
+  const picked = weightedPick(scoreQuotes(available, combinedThemes));
+
+  // Can still be empty if quotes.json failed to load or every candidate is
+  // theme-blocked — newtab falls back on a null response
+  const quote = picked?.quote;
   if (!quote) {
     console.warn("[Musing] No quotes available to display");
     return null;
   }
 
-  // Find matched themes between user's combined themes and quote's themes
-  const userThemes = new Set(combinedThemes.map((t) => t.toLowerCase()));
-  const matchedThemes = (quote.themes || []).filter((t) => userThemes.has(t.toLowerCase()));
+  // Matched themes, sorted by what each contributed to the pick, so the first
+  // entry is the theme that drove it
+  const userThemes = new Map(combinedThemes.map((t) => [t.theme.toLowerCase(), t]));
+  const contributions = (quote.themes || [])
+    .map((name) => ({ name: String(name), entry: userThemes.get(String(name).toLowerCase()) }))
+    .filter((m) => m.entry)
+    .map((m) => ({ ...m, contribution: m.entry.score * themeIdf(m.name) }))
+    .sort((a, b) => b.contribution - a.contribution);
+  const matchedThemes = contributions.map((m) => m.name);
+
+  // A fallback pick earned no reason; sending one would imply causation
+  const driver = picked.score > 0 ? contributions[0] : null;
+  const origin = driver ? "matched" : "fallback";
+  const reason = {
+    theme: driver ? driver.name : null,
+    terms: driver ? (driver.entry.terms || []).slice(0, MAX_REASON_TERMS) : [],
+    origin,
+  };
 
   // Try to generate AI reason if enabled
   let aiReason = null;
@@ -635,6 +770,8 @@ async function getQuoteForDisplay() {
   return {
     ...quote,
     matchedThemes: matchedThemes.length > 0 ? matchedThemes : null,
+    origin,
+    reason,
     aiReason: aiReason,
   };
 }
