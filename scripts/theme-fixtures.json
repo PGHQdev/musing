@@ -139,6 +139,21 @@
       "name": "too short to score",
       "text": "Hey, quick one before I forget. Does this look right to you?",
       "expectEmpty": true
+    },
+    {
+      "name": "homograph: a stale value in a lifecycle hook",
+      "text": "the existing lifecycle hook fires twice and the value is stale",
+      "expectEmpty": true
+    },
+    {
+      "name": "homograph: a method that takes an address",
+      "text": "the method signature takes an address and returns a challenge string",
+      "expectEmpty": true
+    },
+    {
+      "name": "homograph: the resolver and the cache key",
+      "text": "I refactored the resolver and the cache key is now stable across runs",
+      "expectEmpty": true
     }
   ]
 }

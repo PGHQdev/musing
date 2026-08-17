@@ -33,9 +33,11 @@ const THEME_KEYWORDS = {
     weak: ["system", "structure"]
   },
   algorithms: {
-    // "big o" is weak because the widened pattern also matches "big one"
+    // "sort" and "search" were removed: "sort of" is a hedge and "search the logs"
+    // is not an algorithm. "big o" and "graph" are exact, so "big one" and
+    // "graphql" no longer count.
     strong: ["algorithm", "data structure", "hash", "recursion", "dynamic programming"],
-    weak: ["complexity", "sort", "search", "tree", "graph", "optimization", "big o"]
+    weak: ["complexity", "tree", "graph", "optimization", "big o"]
   },
 
   // Learning & Growth
@@ -44,13 +46,11 @@ const THEME_KEYWORDS = {
     weak: ["understand", "knowledge", "course", "practice", "improve", "skill", "advanced"]
   },
   growth: {
-    // "grow" is weak because "growing" and "grown" attach to any noun: a table,
-    // a backlog, a bill
+    // "develop" matched every "developer" and "development", "path" every file
+    // path, "transform" every "transformer", "grow" every growing table, and
+    // "better" every comparison. All five were removed.
     strong: ["growth", "evolve"],
-    weak: [
-      "improve", "better", "progress", "develop", "change", "transform",
-      "journey", "path", "milestone", "grow"
-    ]
+    weak: ["improve", "progress", "change", "journey", "milestone"]
   },
 
   // Emotional
@@ -84,8 +84,10 @@ const THEME_KEYWORDS = {
     weak: ["team", "collaborate", "communicate", "trust", "support"]
   },
   health: {
+    // "mental" was removed for "mental model", and "rest" for "restart",
+    // "restore" and "the rest of the file". "mental health" still hits "health".
     strong: ["health", "sleep", "exercise", "wellness", "tired", "burnout", "meditat"],
-    weak: ["mental", "energy", "balance", "rest"]
+    weak: ["energy", "balance"]
   },
   finance: {
     strong: ["money", "finance", "budget", "price", "expensive", "afford", "income", "salary"],
@@ -98,12 +100,16 @@ const THEME_KEYWORDS = {
     weak: ["continue", "determined", "committed"]
   },
   patience: {
+    // "slow" was removed: a slow query is a performance report, not patience
     strong: ["patient", "patience", "gradual", "calm", "steady"],
-    weak: ["wait", "time", "slow", "eventually", "pace"]
+    weak: ["wait", "time", "eventually", "pace"]
   },
   simplicity: {
+    // "clear" was removed for "clear the cache", "basic" for "basically" and
+    // "basic auth", "reduce" for "reducer". "essential" is exact, so
+    // "essentially" no longer counts.
     strong: ["simple", "simplify", "minimal", "elegant", "straightforward"],
-    weak: ["clean", "clear", "basic", "essential", "reduce"]
+    weak: ["clean", "essential"]
   },
   complexity: {
     strong: ["complex", "complicated", "intricate", "nuance", "sophisticated"],
@@ -134,8 +140,11 @@ const THEME_KEYWORDS = {
     weak: ["document", "edit", "publish", "content", "copy", "story"]
   },
   creativity: {
+    // "design" was removed for api design, "create" for "create a table",
+    // "unique" for a unique index, "original" for "the original version".
+    // "idea" and "art" are exact, so "ideally" and "artifact" no longer count.
     strong: ["creativ", "brainstorm", "innovate", "imagine", "inventive"],
-    weak: ["idea", "design", "art", "create", "original", "unique"]
+    weak: ["idea", "art"]
   },
 
   // Decision Making
@@ -150,8 +159,10 @@ const THEME_KEYWORDS = {
 
   // Problem Solving
   "problem-solving": {
+    // "method" is a function, "address" is memory, and "resolve" is a promise.
+    // All three were removed.
     strong: ["solve", "solution", "tackle", "figure out"],
-    weak: ["problem", "challenge", "approach", "strategy", "method", "address", "resolve"]
+    weak: ["problem", "challenge", "approach", "strategy"]
   },
 
   // Success & Failure
@@ -181,15 +192,20 @@ const THEME_KEYWORDS = {
 
   // Change
   change: {
+    // "different" and "new" were removed: both are generic comparisons that
+    // attach to any noun, and "change" and "update" carry the sense
     strong: ["adapt", "transition", "transform", "evolve"],
-    weak: ["change", "adjust", "shift", "different", "new", "update"]
+    weak: ["change", "adjust", "shift", "update"]
   },
 
   // Philosophy
   philosophy: {
-    // "moral" is weak because the widened pattern also matches "morale"
+    // "moral" is weak because the widened pattern also matches "morale".
+    // "value" was removed for a variable, "truth" for "truthy" and "source of
+    // truth", "purpose" for "the purpose of this function". "exist" and "life"
+    // are exact, so "existing" and "lifecycle" no longer count.
     strong: ["death", "consciousness", "ethics"],
-    weak: ["meaning", "purpose", "exist", "life", "reality", "truth", "value", "moral"]
+    weak: ["meaning", "exist", "life", "reality", "moral"]
   },
 
   // Courage & Fear
@@ -207,9 +223,15 @@ function escapeRegExp(str) {
   return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
-// Generic words that would otherwise prefix-match unrelated terms
-// ("work" -> "workflow", "time" -> "timeline", "change" -> "changelog")
-const EXACT_MATCH_KEYWORDS = new Set(["work", "time", "change"]);
+// Words whose bare form is on-theme and whose widened forms are not
+// ("work" -> "workflow", "time" -> "timeline", "change" -> "changelog",
+// "life" -> "lifecycle", "exist" -> "existing", "balance" -> "balancer",
+// "essential" -> "essentially", "idea" -> "ideally", "art" -> "artifact",
+// "graph" -> "graphql", "big o" -> "big one")
+const EXACT_MATCH_KEYWORDS = new Set([
+  "work", "time", "change", "life", "exist", "balance", "essential",
+  "idea", "art", "graph", "big o"
+]);
 
 // Widened forms that invert the meaning of their keyword. "fearless" is a courage
 // keyword, so without this one sentence feeds fear and courage at once. The forms
