@@ -167,11 +167,10 @@ const THEME_KEYWORDS = {
 
   // Time
   time: {
+    // "hour", "minute", "day", "week", "month" and "year" were removed: a unit of
+    // measure attaches to whatever is being measured and is no evidence of a topic
     strong: ["deadline", "schedule"],
-    weak: [
-      "time", "hour", "minute", "day", "week", "month", "year",
-      "late", "early", "soon", "eventually"
-    ]
+    weak: ["time", "late", "early", "soon", "eventually"]
   },
 
   // Communication
