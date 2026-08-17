@@ -113,19 +113,40 @@
     return THEME_REASONS[theme] || { lead: `you're exploring ${theme}`, phrase: `exploring ${theme}` };
   }
 
+  // Suffix list, longest first. Stemming strips at most one: the first entry
+  // in this order the word ends with, falling back to a trailing "e" when
+  // none matches ("change" has no listed suffix, but ends in "e").
+  const STEM_SUFFIXES = ["ation", "ness", "ing", "ers", "est", "ion", "ed", "es", "er", "ly", "ic", "s"];
+
+  function stem(word) {
+    for (const suffix of STEM_SUFFIXES) {
+      if (word.length > suffix.length && word.endsWith(suffix)) {
+        return word.slice(0, -suffix.length);
+      }
+    }
+    if (word.length > 1 && word.endsWith("e")) {
+      return word.slice(0, -1);
+    }
+    return word;
+  }
+
   /**
-   * Two words share a root when their common prefix is at least 4 characters
-   * and at least 70% of the shorter word's length ("solve"/"solving" at 4 of
-   * 5, "explore"/"exploring" at 6 of 7). Catches inflection that changes
-   * spelling before the suffix (dropped silent "e", diverging stem), which
-   * plain substring containment misses. Compared as integers (i*10 >= 7*len)
-   * to avoid float rounding at the boundary.
+   * Two words share a root when their stems are equal ("writer"/"writing"
+   * both stem to "writ"), or one stem is a prefix of the other by at least 4
+   * characters ("simplest" stems to "simpl", a prefix of "simplify", the
+   * stem of "simplifying"). A prefix-length ratio was tried first and
+   * dropped: it divides by the shorter word, so an inflected term a
+   * character or two longer than the bare keyword ("solved" against
+   * "solving") became the shorter side and diluted the ratio below any
+   * fixed floor even though the root was identical.
    */
   function sharesRoot(a, b) {
-    let i = 0;
-    const max = Math.min(a.length, b.length);
-    while (i < max && a[i] === b[i]) i++;
-    return i >= 4 && i * 10 >= 7 * max;
+    const stemA = stem(a);
+    const stemB = stem(b);
+    if (stemA === stemB) return true;
+    const shorter = stemA.length <= stemB.length ? stemA : stemB;
+    const longer = stemA.length <= stemB.length ? stemB : stemA;
+    return shorter.length >= 4 && longer.startsWith(shorter);
   }
 
   /**
@@ -133,9 +154,9 @@
    * carries evidence instead of repeating the theme label. A term is dropped
    * when the phrase contains it outright ("complex" inside "tackling
    * something complex", cheap and catches multi-word phrases), or when it
-   * shares a root with a phrase word of 4+ characters ("algorithmic" and
-   * "algorithms", "inspire" and "inspiration"). Short phrase words ("on",
-   * "the") are excluded so they can't zero out an unrelated term.
+   * shares a root with a phrase word of 4+ characters ("writer" and
+   * "writing", "solved" and "solving"). Short phrase words ("on", "the")
+   * are excluded so they can't zero out an unrelated term.
    */
   function filterRedundantTerms(phrase, terms) {
     const lowerPhrase = String(phrase).toLowerCase();
