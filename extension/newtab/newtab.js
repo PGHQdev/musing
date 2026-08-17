@@ -6,42 +6,44 @@
 (function () {
   "use strict";
 
-  // Contextual reasons for each theme - explains why a quote was recommended
+  // Contextual reasons for each theme - explains why a quote was recommended.
+  // `lead` is the full sentence clause (unchanged from before). `phrase` is the
+  // same clause with the pronoun opener removed, for use beside matched terms.
   const THEME_REASONS = {
-    programming: "you've been writing code",
-    debugging: "you've been troubleshooting code",
-    architecture: "you've been designing systems",
-    algorithms: "you've been working on algorithms",
-    learning: "you're exploring new concepts",
-    growth: "you're focused on self-improvement",
-    frustration: "you've been working through a challenge",
-    curiosity: "you're exploring something new",
-    excitement: "you've had a breakthrough",
-    anxiety: "you're navigating uncertainty",
-    career: "you're thinking about your career",
-    relationships: "you're thinking about relationships",
-    health: "you're focused on wellbeing",
-    finance: "you're thinking about finances",
-    persistence: "you're pushing through difficulty",
-    patience: "you're playing the long game",
-    simplicity: "you're simplifying things",
-    complexity: "you're tackling something complex",
-    wisdom: "you're seeking deeper understanding",
-    productivity: "you're optimizing your workflow",
-    motivation: "you're looking for inspiration",
-    writing: "you've been writing",
-    creativity: "you're brainstorming ideas",
-    "decision-making": "you're weighing options",
-    uncertainty: "you're navigating the unknown",
-    "problem-solving": "you're solving problems",
-    success: "you're chasing goals",
-    failure: "you're learning from setbacks",
-    time: "you're managing your time",
-    communication: "you're working on communication",
-    change: "you're navigating change",
-    philosophy: "you're reflecting on life",
-    courage: "you're facing something difficult",
-    fear: "you're confronting fears",
+    programming: { lead: "you've been writing code", phrase: "writing code" },
+    debugging: { lead: "you've been troubleshooting code", phrase: "troubleshooting code" },
+    architecture: { lead: "you've been designing systems", phrase: "designing systems" },
+    algorithms: { lead: "you've been working on algorithms", phrase: "working on algorithms" },
+    learning: { lead: "you're exploring new concepts", phrase: "exploring new concepts" },
+    growth: { lead: "you're focused on self-improvement", phrase: "focused on self-improvement" },
+    frustration: { lead: "you've been working through a challenge", phrase: "working through a challenge" },
+    curiosity: { lead: "you're exploring something new", phrase: "exploring something new" },
+    excitement: { lead: "you've had a breakthrough", phrase: "had a breakthrough" },
+    anxiety: { lead: "you're navigating uncertainty", phrase: "navigating uncertainty" },
+    career: { lead: "you're thinking about your career", phrase: "thinking about your career" },
+    relationships: { lead: "you're thinking about relationships", phrase: "thinking about relationships" },
+    health: { lead: "you're focused on wellbeing", phrase: "focused on wellbeing" },
+    finance: { lead: "you're thinking about finances", phrase: "thinking about finances" },
+    persistence: { lead: "you're pushing through difficulty", phrase: "pushing through difficulty" },
+    patience: { lead: "you're playing the long game", phrase: "playing the long game" },
+    simplicity: { lead: "you're simplifying things", phrase: "simplifying things" },
+    complexity: { lead: "you're tackling something complex", phrase: "tackling something complex" },
+    wisdom: { lead: "you're seeking deeper understanding", phrase: "seeking deeper understanding" },
+    productivity: { lead: "you're optimizing your workflow", phrase: "optimizing your workflow" },
+    motivation: { lead: "you're looking for inspiration", phrase: "looking for inspiration" },
+    writing: { lead: "you've been writing", phrase: "writing" },
+    creativity: { lead: "you're brainstorming ideas", phrase: "brainstorming ideas" },
+    "decision-making": { lead: "you're weighing options", phrase: "weighing options" },
+    uncertainty: { lead: "you're navigating the unknown", phrase: "navigating the unknown" },
+    "problem-solving": { lead: "you're solving problems", phrase: "solving problems" },
+    success: { lead: "you're chasing goals", phrase: "chasing goals" },
+    failure: { lead: "you're learning from setbacks", phrase: "learning from setbacks" },
+    time: { lead: "you're managing your time", phrase: "managing your time" },
+    communication: { lead: "you're working on communication", phrase: "working on communication" },
+    change: { lead: "you're navigating change", phrase: "navigating change" },
+    philosophy: { lead: "you're reflecting on life", phrase: "reflecting on life" },
+    courage: { lead: "you're facing something difficult", phrase: "facing something difficult" },
+    fear: { lead: "you're confronting fears", phrase: "confronting fears" },
   };
 
   // Version changelog - keyed by version number
@@ -102,6 +104,37 @@
     { text: "In the middle of difficulty lies opportunity.", author: "Albert Einstein" },
     { text: "The mind is everything. What you think you become.", author: "Buddha" },
   ];
+
+  /**
+   * Theme copy for a reason line, with a fallback for a theme the table
+   * doesn't carry (an extractor theme added after this table was written).
+   */
+  function getThemeCopy(theme) {
+    return THEME_REASONS[theme] || { lead: `you're exploring ${theme}`, phrase: `exploring ${theme}` };
+  }
+
+  /**
+   * Compose the recommendation-reason text for a quote payload. Pure function
+   * (no DOM), so it can be exercised directly outside the page.
+   *
+   * Priority: quote.aiReason, then quote.reason (fallback origin or no theme
+   * renders nothing), then matched terms beside the theme phrase, then the
+   * plain theme lead. Returns null when no reason should show.
+   */
+  function composeReason(quote) {
+    if (quote && quote.aiReason) return quote.aiReason;
+
+    const reason = quote && quote.reason;
+    if (!reason || reason.origin === "fallback" || !reason.theme) return null;
+
+    const copy = getThemeCopy(reason.theme);
+    const terms = Array.isArray(reason.terms) ? reason.terms.filter(Boolean) : [];
+    if (terms.length > 0) {
+      const shown = terms.slice(0, 2).map((t) => `"${t}"`).join(", ");
+      return `${copy.phrase} · ${shown}`;
+    }
+    return copy.lead;
+  }
 
   const quoteEl = document.getElementById("quote");
   const authorEl = document.getElementById("author");
@@ -187,16 +220,11 @@
     quoteEl.textContent = quote.text;
     authorEl.textContent = quote.author;
 
-    // Display recommendation reason - prioritize AI reason over theme-based
-    if (quote.aiReason) {
-      // Use AI-generated contextual reason
-      reasonEl.textContent = quote.aiReason;
-      reasonEl.classList.add("show");
-    } else if (quote.matchedThemes && quote.matchedThemes.length > 0) {
-      // Fall back to theme-based reason
-      const primaryTheme = quote.matchedThemes[0];
-      const reason = THEME_REASONS[primaryTheme] || `you're exploring ${primaryTheme}`;
-      reasonEl.textContent = reason;
+    // Display recommendation reason - AI reason wins, else the matched terms
+    // beside the theme phrase, else the theme lead; a fallback pick shows none.
+    const reasonText = composeReason(quote);
+    if (reasonText) {
+      reasonEl.textContent = reasonText;
       reasonEl.classList.add("show");
     } else {
       reasonEl.textContent = "";
@@ -349,6 +377,8 @@
         themes: quote.themes || [],
         matchedThemes: quote.matchedThemes || null,
         aiReason: quote.aiReason || null,
+        origin: quote.origin || null,
+        reason: quote.reason || null,
       },
     });
   }
