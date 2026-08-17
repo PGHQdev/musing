@@ -47,7 +47,11 @@ function main() {
     }
 
     // Guard against a typo silently turning an assertion into a no-op
-    const declared = [fixture.expectTop, ...(fixture.expectAbsent || [])].filter(Boolean);
+    const declared = [
+      fixture.expectTop,
+      ...(fixture.expectPresent || []),
+      ...(fixture.expectAbsent || []),
+    ].filter(Boolean);
     declared.forEach((theme) => {
       if (!themeVocab.has(theme)) fail(`declares theme "${theme}", which is not in getAllThemes()`);
     });
@@ -67,6 +71,12 @@ function main() {
 
     if (ranked.length === 0 || ranked[0].theme !== fixture.expectTop) {
       fail(`expected top theme "${fixture.expectTop}"`, detail);
+    }
+
+    // Multi-topic fixtures name the themes that must survive the relative cutoff
+    const dropped = (fixture.expectPresent || []).filter((theme) => !ranked.some((t) => t.theme === theme));
+    if (dropped.length > 0) {
+      fail(`expected present, but cut: ${dropped.join(", ")}`, detail);
     }
 
     const leaked = (fixture.expectAbsent || []).filter((theme) => ranked.some((t) => t.theme === theme));

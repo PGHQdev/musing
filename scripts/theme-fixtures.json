@@ -98,6 +98,44 @@
       "expectTerms": ["friend"]
     },
     {
+      "name": "multi-topic: the trace and the promise I made",
+      "text": "The retry loop is still throwing the same exception and I have not found it. I put a breakpoint at the top of the handler and the payload is fine there, so it is something in the second call, but the stack trace stops at a framework frame and I cannot see past it. I have burned two evenings on this and I am no closer. The part that is getting to me is that this is the thing I said would be done by Friday, in front of people, and it is Wednesday. I keep checking the clock instead of the file. I am worried I will hand over something half fixed and spend next week paying for it, and there is a real pressure to just wrap it in a try and move on. So, two questions in one. First, tell me how to get a usable trace out of a framework frame. Second, tell me what a reasonable note looks like if the deadline moves, because I would rather send it today than on Thursday night.",
+      "expectTop": "debugging",
+      "expectPresent": ["debugging", "anxiety"],
+      "expectAbsent": ["growth", "motivation", "learning", "wisdom"],
+      "expectTerms": ["exception", "breakpoint"]
+    },
+    {
+      "name": "multi-topic: day rate against the salary floor",
+      "text": "The contractor rate they floated is 620 a day, which is more than I make now once I count the days I would actually bill. But I lose the salary floor, the sick days, and whatever the pension match is worth, and I would be invoicing a company that took eleven weeks to pay a friend of mine. On the other side, the job I am in has gone quiet. My manager left in March, nobody replaced her, and the last two reviews were copy-paste. There is no promotion coming and I think I have known that since the summer. What I cannot work out is how much of the day rate is real money. Give me the arithmetic properly: what does 620 a day have to clear to match what I have now, counting the gaps between contracts and the months where the income is nothing? And then tell me what I am not asking about, because I suspect I am using the sums to avoid a different question.",
+      "expectTop": "career",
+      "expectPresent": ["career", "finance"],
+      "expectAbsent": ["relationships", "growth", "motivation", "learning", "wisdom"],
+      "expectTerms": ["salary", "promotion"]
+    },
+    {
+      "name": "multi-topic: two diagrams that do not match",
+      "text": "Two of us drew the same box diagram this week and they did not match, which is the actual issue, not the diagram. Mine has the ingest service owning the schema and writing to a read model. His has the read model as its own service with its own store, on the grounds that the ingest side will get noisy. Both are defensible, and we disagree about the api design in a way that neither of us has said out loud. Neither of us has said what we are optimising for either, so we keep arguing about the queue when the disagreement is about who gets paged at 3am and about how the system is meant to be structured. What I want this afternoon is to get us in a room and land the contract between the two pieces before either of us writes more of it. I do not want to win the discussion, I want us to stop having it twice a week in different words. Give me three questions to open with that will surface what each of us is protecting, and tell me how to explain the outcome to someone who was not there.",
+      "expectTop": "architecture",
+      "expectPresent": ["architecture", "communication"],
+      "expectAbsent": ["programming", "growth", "motivation", "learning", "wisdom"],
+      "expectTerms": ["schema", "api design"]
+    },
+    {
+      "name": "multi-topic: the nightly job and the bill",
+      "text": "The nightly job takes eleven hours and it used to take two. I traced it to the part that compares every new record against every existing one, so it is quadratic in the size of the table, and the table has been growing since March. I can build a hash index on the join key and get the average case down, or I can partition by date and only compare inside a window, which is not exact but is probably fine for what this feeds. The reason it is urgent is the bill. That job runs on machines we rent by the hour, and it costs about four thousand a month now against six hundred a year ago. Finance asked about it, politely, which is how they ask twice. Walk me through both options in terms of complexity first, then tell me what the second one actually costs me in correctness. If the exact version is affordable once the algorithm is fixed, say that plainly and I will stop looking for a clever answer.",
+      "expectTop": "algorithms",
+      "expectPresent": ["algorithms", "finance"],
+      "expectAbsent": ["time", "growth", "motivation", "learning", "wisdom"]
+    },
+    {
+      "name": "the colleague who ships anyway",
+      "text": "There is someone on my team who does the thing I do not do. She put a half-finished migration in front of forty people and said this is where it breaks, without any of the hedging I would have done first. Nobody thought less of her. Two people offered to help with the part that was rough. I would have sat on it for another fortnight, polished the demo, and shown only the version that cannot embarrass me. I have watched myself do this three times this year. I do not think she is fearless, I think she has decided that being wrong in public is survivable and I have not decided that yet. What I want from you is not a pep talk. Give me the smallest version of that move I could make this week, something I would actually do on Thursday, and not a principle I agree with and then ignore.",
+      "expectTop": "courage",
+      "expectAbsent": ["fear", "growth", "motivation", "learning", "wisdom"],
+      "expectTerms": ["fearless"]
+    },
+    {
       "name": "too short to score",
       "text": "Hey, quick one before I forget. Does this look right to you?",
       "expectEmpty": true

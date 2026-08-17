@@ -44,10 +44,12 @@ const THEME_KEYWORDS = {
     weak: ["understand", "knowledge", "course", "practice", "improve", "skill", "advanced"]
   },
   growth: {
-    strong: ["grow", "growth", "evolve"],
+    // "grow" is weak because "growing" and "grown" attach to any noun: a table,
+    // a backlog, a bill
+    strong: ["growth", "evolve"],
     weak: [
       "improve", "better", "progress", "develop", "change", "transform",
-      "journey", "path", "milestone"
+      "journey", "path", "milestone", "grow"
     ]
   },
 
@@ -210,6 +212,12 @@ function escapeRegExp(str) {
 // ("work" -> "workflow", "time" -> "timeline", "change" -> "changelog")
 const EXACT_MATCH_KEYWORDS = new Set(["work", "time", "change"]);
 
+// Widened forms that invert the meaning of their keyword. "fearless" is a courage
+// keyword, so without this one sentence feeds fear and courage at once. The forms
+// are suppressed for a keyword that widened into them ("fear"), and kept for a
+// keyword that is one of them ("fearless" still matches "fearlessly").
+const INVERTED_FORMS = new Set(["fearless", "fearlessly", "fearlessness"]);
+
 // A theme survives only with one strong keyword or two distinct weak ones
 const MIN_DISTINCT_WEAK = 2;
 // A theme survives only within this fraction of the top score
@@ -247,10 +255,11 @@ const THEME_PATTERNS = Object.entries(THEME_KEYWORDS).map(([theme, tiers]) => {
 /**
  * Collect every match of one keyword pattern
  * @param {RegExp} regex - Global pattern for a single keyword
+ * @param {string} keyword - The keyword the pattern was built from
  * @param {string} text - Lowercased conversation text
  * @returns {{count: number, first: string, firstIndex: number}|null}
  */
-function matchKeyword(regex, text) {
+function matchKeyword(regex, keyword, text) {
   regex.lastIndex = 0;
   let count = 0;
   let first = "";
@@ -258,8 +267,10 @@ function matchKeyword(regex, text) {
   let match;
 
   while ((match = regex.exec(text)) !== null) {
+    const form = match[0];
+    if (INVERTED_FORMS.has(form) && !INVERTED_FORMS.has(keyword)) continue;
     if (count === 0) {
-      first = match[0];
+      first = form;
       firstIndex = match.index;
     }
     count += 1;
@@ -319,7 +330,7 @@ function extractThemes(text, maxThemes = 5) {
 
     // Distinct keywords, not total hits, so one word repeated cannot carry a theme
     for (const { keyword, strong, exact, regex } of keywords) {
-      const match = matchKeyword(regex, normalizedText);
+      const match = matchKeyword(regex, keyword, normalizedText);
       if (!match) continue;
 
       if (strong) {
